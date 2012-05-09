@@ -73,7 +73,7 @@
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <mainClass>com.github.swingomatic.App</mainClass>
+                            <mainClass>com.github.swingomatic.server.App</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Specification-Title>${project.name}</Specification-Title>
@@ -108,7 +108,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.swingomatic.App</mainClass>
+                            <mainClass>com.github.swingomatic.server.App</mainClass>
                         </manifest>
                     </archive>
                     <fileSets>
