@@ -36,20 +36,20 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
-public class App implements
+public class Swingomatic implements
         ActionListener, KeyListener, GUIInitializedListener, DocumentListener {
 
     private JTree accessibleTree;
     private static int depth = 0;
     private static final int MAX_DEPTH = 100;
-    private static Logger logger = Logger.getLogger(App.class);
+    private static Logger logger = Logger.getLogger(Swingomatic.class);
     private Server server;
 
     public static void main(String s[]) {
-        App app = new App();
+        Swingomatic app = new Swingomatic();
     }
 
-    public App() {
+    public Swingomatic() {
         initialize();
         logger.debug("Swingomatic server....");
     }
