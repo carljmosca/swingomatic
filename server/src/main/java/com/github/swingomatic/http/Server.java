@@ -24,18 +24,20 @@ import org.apache.log4j.Logger;
 public class Server extends Observable implements Runnable {
 
     private static Logger logger = Logger.getLogger(Server.class);
-    private int port;
+    private int listenPort;
+    private String listenAddress;
 
-    public Server(int listen_port) {
-        port = listen_port;
+    public Server(String listenAddress, int listenPort) {
+        this.listenAddress = listenAddress;
+        this.listenPort = listenPort;
     }
 
     public void run() {
         ServerSocket serversocket;
         try {
-            logger.debug("Trying to bind to localhost on port " + Integer.toString(port) + "...");
-            //make a ServerSocket and bind it to given port,
-            serversocket = new ServerSocket(port);
+            logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
+            //make a ServerSocket and bind it to given listenPort,
+            serversocket = new ServerSocket(listenPort);
         } catch (Exception e) { //catch any errors and print errors to gui
             sendMessage(null, "Fatal Error:" + e.getMessage());
             logger.error("Fatal error: " + e.getMessage());
@@ -45,13 +47,17 @@ public class Server extends Observable implements Runnable {
         while (true) {
             logger.debug("Ready, Waiting for requests...");
             try {
-                //this call waits/blocks until someone connects to the port we
+                //this call waits/blocks until someone connects to the listenPort we
                 //are listening to
                 Socket connectionsocket = serversocket.accept();
                 InetAddress client = connectionsocket.getInetAddress();
-                // TODO: add test for localhost or configurable address
-                logger.debug("Client address: " + client);
-                //and print it to gui
+                // test for listen address
+                logger.debug("Client address: " + client.getHostAddress());
+                if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
+                    logger.error("Listening to " + listenAddress +  
+                            "...ignoring client address: " + client.getHostAddress());
+                    break;
+                }
                 sendMessage(null, client.getHostName() + " connected to server.\n");
                 //Read the http request from the client from the socket interface
                 //into a buffer.
