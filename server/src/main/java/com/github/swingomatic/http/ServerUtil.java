@@ -6,8 +6,11 @@ package com.github.swingomatic.http;
 
 /**
  *
- * @author Carl J. Mosca
+ * This class is a from an HTTP server written by Jon Berg.
+ * Thank you Jon.
+ * Original work is available at http://fragments.turrlemeat.com/javawebserver.php
  */
+
 public class ServerUtil {
     //this method makes the HTTP header for the response
     //the headers job is to tell the browser the result of the request
