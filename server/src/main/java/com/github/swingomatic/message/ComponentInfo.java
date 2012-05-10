@@ -13,6 +13,7 @@ public class ComponentInfo {
     private String clazz;
     private String ofLabel;
     private String text;
+    private String command;
     
     public ComponentInfo(String name, String clazz) {
         this.name = name;
@@ -56,6 +57,14 @@ public class ComponentInfo {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
     
 }
