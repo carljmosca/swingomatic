@@ -1,18 +1,17 @@
 package co.github.swingomatic.tc.test;
 
+import com.github.swingomatic.message.ApplicationCommand;
+import com.github.swingomatic.tc.http.HttpClientWrapper;
+import com.thoughtworks.xstream.XStream;
 import java.io.StringReader;
-
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-
+import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-
-import static org.junit.Assert.*;
-import com.github.swingomatic.tc.http.HttpClientWrapper;
 
 
 /**
@@ -33,6 +32,9 @@ public class HttpClientWrapperTest {
 	public void testPost() throws Exception{
 		httpClient = new HttpClientWrapper();		
 		String response = httpClient.post(LIST_COMPONENTS_URL, null);
+                XStream xstream = new XStream();
+                ApplicationCommand ac = (ApplicationCommand)xstream.fromXML(response);
+                assertNotNull(ac);
 		assertNotNull(getValue("/list",response));
 	}
 	
