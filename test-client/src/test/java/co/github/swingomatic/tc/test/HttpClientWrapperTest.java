@@ -52,19 +52,16 @@ public class HttpClientWrapperTest {
 	private String getValue(String xpathExpression, String xml) throws Exception {
 
 		String value = null;
-
+		
 		// Standard of reading a XML file
 		Document xmlDocument = DocumentBuilderFactory.newInstance()
 				.newDocumentBuilder()
 				.parse(new InputSource(new StringReader(xml)));
 		XPathExpression expr = null;
-
 		// Create a XPathFactory
 		XPathFactory xFactory = XPathFactory.newInstance();
-
 		// Create a XPath object
 		XPath xpath = xFactory.newXPath();
-
 		// Compile the XPath expression
 		expr = xpath.compile(xpathExpression);
 		// Run the query and get a nodeset

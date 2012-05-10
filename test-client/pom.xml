@@ -3,7 +3,6 @@
   <groupId>gov.uscourts.vaeb</groupId>
   <artifactId>test-client</artifactId>
   <version>0.0.1</version>
-  
   <name>swingomatic-test-client</name>
   <url>http://maven.apache.org</url>
   	<build>
