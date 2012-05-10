@@ -69,14 +69,14 @@ public class Swingomatic implements
                 if (sessionInfo.getOutput() != null) {
                     XStream xstream = new XStream();
                     logger.debug("Message from server: " + sessionInfo.getMessage());
+                    String message = sessionInfo.getMessage();
+                    ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
                     sessionInfo.setResponse(getUsage() + " \r\nreceived: " + sessionInfo.getMessage());
-                    if ((sessionInfo.getMessage() != null) && sessionInfo.getMessage().trim().length() >= 0) {
-                        if ("list-components".equalsIgnoreCase(sessionInfo.getMessage())) {
-                            ApplicationCommand ac = createComponentTree();
-                            sessionInfo.setResponse(xstream.toXML(ac));
-                        } else if (sessionInfo.getMessage().toLowerCase().startsWith("execute")) {
-                            sessionInfo.setResponse(executeCommand(sessionInfo.getMessage().substring(7)));
-                        }
+                    if ("list-components".equalsIgnoreCase(ac.getCommand())) {
+                        ac = createComponentTree();
+                        sessionInfo.setResponse(xstream.toXML(ac));
+                    } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
+                        sessionInfo.setResponse(executeCommand(sessionInfo.getMessage().substring(7)));
                     }
                     sendResponseToClient(sessionInfo);
                 }
@@ -241,11 +241,6 @@ public class Swingomatic implements
             }
         }
         return result;
-    }
-
-    private void showComponent(Component c) {
-        logger.debug("Component - Name: " + c.getName()
-                + " Class: " + c.getClass().toString());
     }
 
     private JTree createAccessibleTree() {

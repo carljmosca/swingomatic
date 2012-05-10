@@ -4,10 +4,7 @@
  */
 package com.github.swingomatic.http;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,11 +13,10 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * This class is a modified version of an HTTP server written by Jon Berg.
- * Thank you Jon.
- * Original work is available at http://fragments.turrlemeat.com/javawebserver.php
+ * This class is a modified version of an HTTP server written by Jon Berg. Thank
+ * you Jon. Original work is available at
+ * http://fragments.turrlemeat.com/javawebserver.php
  */
-
 public class Server extends Observable implements Runnable {
 
     private static Logger logger = Logger.getLogger(Server.class);
@@ -54,15 +50,16 @@ public class Server extends Observable implements Runnable {
                 // test for listen address
                 logger.debug("Client address: " + client.getHostAddress());
                 if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
-                    logger.error("Listening to " + listenAddress +  
-                            "...ignoring client address: " + client.getHostAddress());
+                    logger.error("Listening to " + listenAddress
+                            + "...ignoring client address: " + client.getHostAddress());
                     break;
                 }
                 sendMessage(null, client.getHostName() + " connected to server.\n");
                 //Read the http request from the client from the socket interface
                 //into a buffer.
-                
-                BufferedReader input = new BufferedReader(new InputStreamReader(connectionsocket.getInputStream()));
+                BufferedReader input = null;
+
+                input = new BufferedReader(new InputStreamReader(connectionsocket.getInputStream()));
                 //Prepare a outputstream from us to the client,
                 //this will be used sending back our response
                 //(header + requested file) to the client.
@@ -99,6 +96,22 @@ public class Server extends Observable implements Runnable {
                 }
             }
             path = tmp2.substring(start + 2, end); //fill in the path
+            String data = "";
+            char[] buffer = new char[1024];
+            try {
+                while (true) {
+                    int r = input.read(buffer, 0, 1024);
+                    path = path + new String(buffer);
+                    if (r != 1024) {
+                        break;
+                    }
+                }
+            } catch (IOException ioe) {
+                logger.error(ioe.getMessage());
+            }
+            if (path.indexOf("<") >= 0) {
+                path = path.substring(path.indexOf("<"));
+            }
             sendMessage(output, path);
             return;
         } catch (Exception e) {
@@ -123,9 +136,8 @@ public class Server extends Observable implements Runnable {
     private void sendMessage(DataOutputStream output, String message) {
         SessionInfo sessionInfo = new SessionInfo();
         sessionInfo.setOutput(output);
-        sessionInfo.setMessage(message);        
+        sessionInfo.setMessage(message);
         setChanged();
         notifyObservers(sessionInfo);
     }
-
 }
