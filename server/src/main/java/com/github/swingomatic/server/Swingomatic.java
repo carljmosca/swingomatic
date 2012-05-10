@@ -20,6 +20,7 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,7 @@ public class Swingomatic implements
     }
 
     public Swingomatic() {
+        initializeLogDirectory();
         initialize();
         logger.debug("Swingomatic server....");
     }
@@ -83,13 +85,24 @@ public class Swingomatic implements
         new Thread(server).start();
     }
 
+    private static void initializeLogDirectory() {
+        try {
+            File logDir = new File("./logs");
+            if (!logDir.exists()) {
+                logDir.mkdir();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     private String getUsage() {
         String result = "Usage:\r\n"
                 + "list-components\r\n"
                 + "execute<XML>";
         return result;
     }
-    
+
     private String executeCommand(String xml) {
         String result = "";
         XStream xstream = new XStream();
