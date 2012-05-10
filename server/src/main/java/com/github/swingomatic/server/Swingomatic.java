@@ -7,6 +7,7 @@ package com.github.swingomatic.server;
 import com.github.swingomatic.http.Server;
 import com.github.swingomatic.http.ServerUtil;
 import com.github.swingomatic.http.SessionInfo;
+import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
 import com.sun.java.accessibility.util.EventQueueMonitor;
 import com.sun.java.accessibility.util.GUIInitializedListener;
@@ -69,8 +70,8 @@ public class Swingomatic implements
                     sessionInfo.setResponse(getUsage() + " \r\nreceived: " + sessionInfo.getMessage());
                     if ((sessionInfo.getMessage() != null) && sessionInfo.getMessage().trim().length() >= 0) {
                         if ("list-components".equalsIgnoreCase(sessionInfo.getMessage())) {
-                            List list = createComponentTree();
-                            sessionInfo.setResponse(xstream.toXML(list));
+                            ApplicationCommand ac = createComponentTree();
+                            sessionInfo.setResponse(xstream.toXML(ac));
                         } else if (sessionInfo.getMessage().toLowerCase().startsWith("execute")) {
                             sessionInfo.setResponse(executeCommand(sessionInfo.getMessage().substring(7)));
                         }
@@ -185,16 +186,16 @@ public class Swingomatic implements
         });
     }
 
-    private List createComponentTree() {
-        JTree t;
-        List result = new ArrayList(0);
+    private ApplicationCommand createComponentTree() {
+        ApplicationCommand ac = new ApplicationCommand();
+        ac.setResult("OK");
+        ac.setComponents(new ArrayList(0));
         Window[] wins = EventQueueMonitor.getTopLevelWindows();
         ComponentObject root = new ComponentObject("Component Tree");
         for (int i = 0; i < wins.length; i++) {
-            addComponentNodes(wins[i], root, result);
+            addComponentNodes(wins[i], root, ac.getComponents());
         }
-        t = new JTree(root);
-        return result;
+        return ac;
     }
 
     private List addComponentNodes(Component c, ComponentObject root, List result) {

@@ -14,6 +14,7 @@ public class ApplicationCommand {
     
     private String command;
     private String parameter;
+    private String result;
     private List components;
 
     public String getCommand() {
@@ -38,6 +39,14 @@ public class ApplicationCommand {
 
     public void setComponents(List components) {
         this.components = components;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
     
 }
