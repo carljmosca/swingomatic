@@ -14,6 +14,7 @@ public class ComponentInfo {
     private String ofLabel;
     private String text;
     private String command;
+    private String toolTipText;
     
     public ComponentInfo(String name, String clazz) {
         this.name = name;
@@ -65,6 +66,14 @@ public class ComponentInfo {
 
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    public String getToolTipText() {
+        return toolTipText;
+    }
+
+    public void setToolTipText(String toolTipText) {
+        this.toolTipText = toolTipText;
     }
     
 }
