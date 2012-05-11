@@ -68,7 +68,7 @@ public class HttpClientWrapperTest {
         ac.setCommand("execute");
         ComponentInfo ci = new ComponentInfo("", "class javax.swing.JTextField");
         ci.setOfLabel("Divider Size");
-        ci.setText("9876");
+        ci.setText("54321");
         ac.setComponents(new ArrayList(0));
         ac.getComponents().add(ci);
         String message = xstream.toXML(ac);
