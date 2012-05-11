@@ -123,9 +123,17 @@ public class Swingomatic implements
 
     private boolean processComponent(ComponentInfo componentInfo) {
         logger.debug("processing component: " + componentInfo.toString());
-        boolean ok = true;
+        boolean ok = false;
         Window[] wins = EventQueueMonitor.getTopLevelWindows();
         ComponentObject root = new ComponentObject("Component Tree");
+        //TODO: delay/retries
+        if (componentInfo.getDelay() > 0) {
+            try {
+                Thread.sleep(componentInfo.getDelay());
+            } catch (InterruptedException ex) {
+                logger.debug(ex.getMessage());
+            }
+        }
         for (int i = 0; i < wins.length; i++) {
             ok = processComponentNodes(wins[i], root, componentInfo);
         }
@@ -249,8 +257,15 @@ public class Swingomatic implements
             int count = ((Container) c).getComponentCount();
             for (int i = 0; i < count; i++) {
                 Component comp = ((Container) c).getComponent(i);
-                result.add(new ComponentInfo(comp.getName(), comp.getClass().toString()));
-                //TODO: add ToolTipText when available
+                ComponentInfo componentInfo = new ComponentInfo(comp.getName(), comp.getClass().toString());
+                result.add(componentInfo);
+                componentInfo.setxCoordinate(comp.getX());
+                componentInfo.setyCoordinate(comp.getY());
+                //TODO: add ToolTipText when available               
+                if (comp instanceof JTextField) {
+                    JTextField jTextField = (JTextField) comp;
+                    componentInfo.setToolTipText(jTextField.getToolTipText());
+                }
                 if (comp instanceof JLabel) {
                     JLabel jLabel = (JLabel) comp;
                     ((ComponentInfo) result.get(result.size() - 1)).setText(jLabel.getText());
@@ -286,14 +301,14 @@ public class Swingomatic implements
                 logger.debug("processCompoentNodes: " + comp.getClass().toString());
                 if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
                     logger.debug("ofLabel and JLabel found");
-                    JLabel jLabel = (JLabel)comp;
+                    JLabel jLabel = (JLabel) comp;
                     if (jLabel.getLabelFor() == null) {
                         logger.debug("jLabel with null LabelFor found: " + jLabel.getText());
                     } else if (jLabel.getText().equals(componentInfo.getOfLabel())) {
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
                         logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
                         if (jLabel.getLabelFor() instanceof JTextField) {
-                            ((JTextField)jLabel.getLabelFor()).setText(componentInfo.getText());
+                            ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
                             return true;
                         }
                     }
