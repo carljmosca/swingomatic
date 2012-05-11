@@ -4,7 +4,10 @@
  */
 package com.github.swingomatic.http;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -57,15 +60,14 @@ public class Server extends Observable implements Runnable {
                 sendMessage(null, client.getHostName() + " connected to server.\n");
                 //Read the http request from the client from the socket interface
                 //into a buffer.
-                BufferedReader input = null;
-
-                input = new BufferedReader(new InputStreamReader(connectionsocket.getInputStream()));
+                BufferedReader input = new BufferedReader(new InputStreamReader(connectionsocket.getInputStream()));
                 //Prepare a outputstream from us to the client,
                 //this will be used sending back our response
                 //(header + requested file) to the client.
                 DataOutputStream output = new DataOutputStream(connectionsocket.getOutputStream());
 
                 http_handler(input, output);
+                input.close();
             } catch (Exception e) { //catch any errors, and print them
                 sendMessage(null, "\nError:" + e.getMessage());
             }
