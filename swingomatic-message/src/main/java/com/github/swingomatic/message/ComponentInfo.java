@@ -15,6 +15,10 @@ public class ComponentInfo {
     private String text;
     private String command;
     private String toolTipText;
+    private int xCoordinate;
+    private int yCoordinate;
+    private int delay;
+    private int retries;
     
     public ComponentInfo() {
         
@@ -78,6 +82,38 @@ public class ComponentInfo {
 
     public void setToolTipText(String toolTipText) {
         this.toolTipText = toolTipText;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+
+    public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+    public int getxCoordinate() {
+        return xCoordinate;
+    }
+
+    public void setxCoordinate(int xCoordinate) {
+        this.xCoordinate = xCoordinate;
+    }
+
+    public int getyCoordinate() {
+        return yCoordinate;
+    }
+
+    public void setyCoordinate(int yCoordinate) {
+        this.yCoordinate = yCoordinate;
     }
     
     public String toString() {
