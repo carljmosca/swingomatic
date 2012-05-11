@@ -71,7 +71,7 @@ public class Swingomatic implements
                     logger.debug("Message from server: " + sessionInfo.getMessage());
                     String message = sessionInfo.getMessage();
                     ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
-                    ac.setResult(getUsage() + " \r\nreceived: " + sessionInfo.getMessage());
+                    ac.setResult(getUsage() + " \r\nreceived: " + ac.getCommand());
                     if ("list-components".equalsIgnoreCase(ac.getCommand())) {
                         ac = listComponents();
                     } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
@@ -110,7 +110,11 @@ public class Swingomatic implements
             if (ac.getComponents().get(i) instanceof ComponentInfo) {
                 ComponentInfo ci = (ComponentInfo) ac.getComponents().get(i);
                 ok = processComponent(ci);
+                if (!ok) {
+                    ac.setResult("Not completed: " + i + " " + ci.getName());
+                }
             } else {
+                ac.setResult("Error: " + i);
                 ok = false;
             }
         }
@@ -125,17 +129,26 @@ public class Swingomatic implements
         for (int i = 0; i < wins.length; i++) {
             ok = processComponentNodes(wins[i], root, componentInfo);
         }
+        logger.debug("end processCompent - result: " + ok);
         return ok;
     }
 
     private void sendResponseToClient(SessionInfo sessionInfo) {
-        if ((sessionInfo.getOutput() == null) && (sessionInfo.getResponse() != null)) {
+        if (sessionInfo.getSocket() == null) {
             return;
         }
+//        if ((sessionInfo.getOutput() == null) || (sessionInfo.getResponse() != null)) {
+//            return;
+//        }
         try {
+            logger.debug("sendResponseToClient:" + sessionInfo.getResponse());
             sessionInfo.getOutput().writeBytes(ServerUtil.construct_http_header(200, 4,
                     sessionInfo.getResponse()));
-            sessionInfo.getOutput().close();
+            //sessionInfo.getOutput().flush();
+//            sessionInfo.getOutput().close();
+//            sessionInfo.getSocket().getInputStream().close();
+//            sessionInfo.getSocket().getOutputStream().close();
+            sessionInfo.getSocket().close();
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
@@ -176,18 +189,18 @@ public class Swingomatic implements
         SwingEventMonitor.addKeyListener(this);
         SwingEventMonitor.addDocumentListener(this);
         SwingEventMonitor.addActionListener(this);
-        SwingEventMonitor.addPropertyChangeListener(new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent evt) {
-                logger.debug("PropertyChange: " + evt.getPropertyName());
-            }
-        });
-        SwingEventMonitor.addChangeListener(new ChangeListener() {
-
-            public void stateChanged(ChangeEvent e) {
-                logger.debug("StateChanged: " + e.getSource().toString());
-            }
-        });
+//        SwingEventMonitor.addPropertyChangeListener(new PropertyChangeListener() {
+//
+//            public void propertyChange(PropertyChangeEvent evt) {
+//                logger.debug("PropertyChange: " + evt.getPropertyName());
+//            }
+//        });
+//        SwingEventMonitor.addChangeListener(new ChangeListener() {
+//
+//            public void stateChanged(ChangeEvent e) {
+//                logger.debug("StateChanged: " + e.getSource().toString());
+//            }
+//        });
         SwingEventMonitor.addFocusListener(new FocusListener() {
 
             public void focusGained(FocusEvent e) {
