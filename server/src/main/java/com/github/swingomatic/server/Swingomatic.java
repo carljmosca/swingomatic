@@ -71,13 +71,13 @@ public class Swingomatic implements
                     logger.debug("Message from server: " + sessionInfo.getMessage());
                     String message = sessionInfo.getMessage();
                     ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
-                    sessionInfo.setResponse(getUsage() + " \r\nreceived: " + sessionInfo.getMessage());
+                    ac.setResult(getUsage() + " \r\nreceived: " + sessionInfo.getMessage());
                     if ("list-components".equalsIgnoreCase(ac.getCommand())) {
-                        ac = createComponentTree();
-                        sessionInfo.setResponse(xstream.toXML(ac));
+                        ac = listComponents();
                     } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
-                        sessionInfo.setResponse(executeCommand(sessionInfo.getMessage().substring(7)));
+                        executeCommand(ac);
                     }
+                    sessionInfo.setResponse(xstream.toXML(ac));
                     sendResponseToClient(sessionInfo);
                 }
             }
@@ -103,12 +103,29 @@ public class Swingomatic implements
         return result;
     }
 
-    private String executeCommand(String xml) {
-        String result = "";
-        XStream xstream = new XStream();
-        Object o = xstream.fromXML(xml);
-        o.toString();
-        return result;
+    private boolean executeCommand(ApplicationCommand ac) {
+        boolean ok = ac.getComponents() != null;
+        int i = 0;
+        while (ok && (i < ac.getComponents().size())) {
+            if (ac.getComponents().get(i) instanceof ComponentInfo) {
+                ComponentInfo ci = (ComponentInfo) ac.getComponents().get(i);
+                ok = processComponent(ci);
+            } else {
+                ok = false;
+            }
+        }
+        return ok;
+    }
+
+    private boolean processComponent(ComponentInfo componentInfo) {
+        logger.debug("processing component: " + componentInfo.toString());
+        boolean ok = true;
+        Window[] wins = EventQueueMonitor.getTopLevelWindows();
+        ComponentObject root = new ComponentObject("Component Tree");
+        for (int i = 0; i < wins.length; i++) {
+            ok = processComponentNodes(wins[i], root, componentInfo);
+        }
+        return ok;
     }
 
     private void sendResponseToClient(SessionInfo sessionInfo) {
@@ -152,7 +169,7 @@ public class Swingomatic implements
                 System.exit(0);
             }
         };
-        createComponentTree();
+        listComponents();
 
         accessibleTree = createAccessibleTree();
 
@@ -175,7 +192,7 @@ public class Swingomatic implements
 
             public void focusGained(FocusEvent e) {
                 if ("class com.ams.momentum.widgets.ComboBox".equals(e.getComponent().getClass().toString())) {
-                    createComponentTree();
+                    listComponents();
                 }
                 logger.debug("focusGained: " + e.getComponent().getClass().toString());
             }
@@ -188,7 +205,7 @@ public class Swingomatic implements
             public void componentAdded(ContainerEvent e) {
                 if ("seeThroughGlassPane".equals(e.getChild().getName())
                         || "null.glassPane".equals(e.getChild().getName())) {
-                    createComponentTree();
+                    listComponents();
 
                 }
                 logger.debug("ComponentAdded: " + e.getChild().getName());
@@ -199,7 +216,7 @@ public class Swingomatic implements
         });
     }
 
-    private ApplicationCommand createComponentTree() {
+    private ApplicationCommand listComponents() {
         ApplicationCommand ac = new ApplicationCommand();
         ac.setResult("OK");
         ac.setComponents(new ArrayList(0));
@@ -212,7 +229,6 @@ public class Swingomatic implements
     }
 
     private List addComponentNodes(Component c, ComponentObject root, List result) {
-        String name;
         ComponentObject me;
         me = new ComponentObject(c);
         root.add(me);
@@ -221,6 +237,7 @@ public class Swingomatic implements
             for (int i = 0; i < count; i++) {
                 Component comp = ((Container) c).getComponent(i);
                 result.add(new ComponentInfo(comp.getName(), comp.getClass().toString()));
+                //TODO: add ToolTipText when available
                 if (comp instanceof JLabel) {
                     JLabel jLabel = (JLabel) comp;
                     ((ComponentInfo) result.get(result.size() - 1)).setText(jLabel.getText());
@@ -231,15 +248,54 @@ public class Swingomatic implements
                                 jLabel.getText(),
                                 ""));
                     }
-                    if ("Document Title:".equals(jLabel.getText())) {
-                        if (jLabel.getLabelFor() != null) {
-                            ((JTextField) jLabel.getLabelFor()).setText("hello----");
-                        }
-                    }
+//                    if ("Document Title:".equals(jLabel.getText())) {
+//                        if (jLabel.getLabelFor() != null) {
+//                            ((JTextField) jLabel.getLabelFor()).setText("hello----");
+//                        }
+//                    }
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
             }
         }
+        return result;
+    }
+
+    private boolean processComponentNodes(Component c, ComponentObject root,
+            ComponentInfo componentInfo) {
+        boolean result = false;
+        ComponentObject me;
+        me = new ComponentObject(c);
+        root.add(me);
+        if (c instanceof Container) {
+            int count = ((Container) c).getComponentCount();
+            for (int i = 0; i < count; i++) {
+                Component comp = ((Container) c).getComponent(i);
+                logger.debug("processCompoentNodes: " + comp.getClass().toString());
+                if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
+                    logger.debug("ofLabel and JLabel found");
+                    JLabel jLabel = (JLabel)comp;
+                    if (jLabel.getLabelFor() == null) {
+                        logger.debug("jLabel with null LabelFor found: " + jLabel.getText());
+                    } else if (jLabel.getText().equals(componentInfo.getOfLabel())) {
+                        logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
+                        logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
+                        if (jLabel.getLabelFor() instanceof JTextField) {
+                            ((JTextField)jLabel.getLabelFor()).setText(componentInfo.getText());
+                            return true;
+                        }
+                    }
+                }
+//                if (!comp.getClass().toString().equals(componentInfo.getClazz())) {
+//                    continue; // no match, continue
+//                }
+//                if (comp instanceof JLabel) {
+//                    JLabel jLabel = (JLabel) comp;
+//                }
+                result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
+            }
+        }
+        // if we reach this point, we have not found the component and therefore
+        // cannot process 
         return result;
     }
 
