@@ -142,10 +142,18 @@ public class HttpClientWrapper {
             pw.print("Content-Length:" + query.length() + "\n\n");
             pw.print(query);
             //get result
-            String l = null;
-            while ((l = br.readLine()) != null) {
-                result.append(l);
+            char[] charBuffer = new char[1024];
+            String l = "";
+            while (true) {
+                int r = br.read(charBuffer, 0, 1024);
+                if (r > 0) {
+                    l = l + new String(charBuffer, 0, r);
+                }
+                if (r < 1024) {
+                    break;
+                }
             }
+            result.append(l);
             pw.close();
             br.close();
         } catch (UnknownHostException ex) {
