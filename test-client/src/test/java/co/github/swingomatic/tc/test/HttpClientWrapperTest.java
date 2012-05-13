@@ -25,6 +25,7 @@ public class HttpClientWrapperTest {
      */
     private final static String LIST_COMPONENTS_URL = "http://localhost:8088/list-components";
     private final static String MAIN_URL = "http://localhost:8088";
+    private final String BEGINNING_OF_MESSAGE_TAG = "<com.github.swingomatic.message.ApplicationCommand>";
     /**
      * The http client.
      */
@@ -42,26 +43,25 @@ public class HttpClientWrapperTest {
 //        assertNotNull(ac);
 //        assertNotNull(getValue("/list", response));
 //    }
+    @Test
+    public void testApplicationCommandListComponents() throws Exception {
+        httpClient = new HttpClientWrapper();
+        XStream xstream = new XStream();
+        ApplicationCommand ac = new ApplicationCommand();
+        ac.setCommand("list-components");
+        String message = xstream.toXML(ac);
+        String response = httpClient.doCall(MAIN_URL, "/", message); //, (message));
+        int p = response.indexOf(BEGINNING_OF_MESSAGE_TAG);
+        if (p >= 0) {
+            response = response.substring(p);
+        }
+        ac = (ApplicationCommand) xstream.fromXML(response);
+        assertNotNull(ac);
+    }
 
-//    @Test
-//    public void testApplicationCommandListComponents() throws Exception {
-//        httpClient = new HttpClientWrapper();
-//        XStream xstream = new XStream();
-//        ApplicationCommand ac = new ApplicationCommand();
-//        ac.setCommand("list-components");
-//        String message = xstream.toXML(ac);
-//        String response = httpClient.doCall(MAIN_URL, "/", message); //, (message));
-//        int p = response.indexOf("?>");
-//        if (p >= 0) {
-//            response = response.substring(p + 2);
-//        }
-//        ac = (ApplicationCommand) xstream.fromXML(response);
-//        assertNotNull(ac);
-//    }
-    
     @Test
     public void testApplicationCommandExecute() throws Exception {
-            //<clazz>class javax.swing.JTextField</clazz>      <ofLabel>Divider Size</ofLabel>      <text></text>
+        //<clazz>class javax.swing.JTextField</clazz>      <ofLabel>Divider Size</ofLabel>      <text></text>
         httpClient = new HttpClientWrapper();
         XStream xstream = new XStream();
         ApplicationCommand ac = new ApplicationCommand();
@@ -91,7 +91,7 @@ public class HttpClientWrapperTest {
         ac = (ApplicationCommand) xstream.fromXML(response);
         assertNotNull(ac);
     }
-    
+
     //helper methods
     /**
      * Gets the scale value from the supplied xml.
