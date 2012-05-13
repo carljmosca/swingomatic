@@ -66,10 +66,14 @@ public class HttpClientWrapperTest {
         XStream xstream = new XStream();
         ApplicationCommand ac = new ApplicationCommand();
         ac.setCommand("execute");
+        ac.setComponents(new ArrayList(0));
         ComponentInfo ci = new ComponentInfo("", "class javax.swing.JTextField");
         ci.setOfLabel("Divider Size");
         ci.setText("54321");
-        ac.setComponents(new ArrayList(0));
+        ac.getComponents().add(ci);
+        ci = new ComponentInfo("", "class javax.swing.JTextField");
+        ci.setOfLabel("First Component's Minimum Size");
+        ci.setText("99999");
         ac.getComponents().add(ci);
         String message = xstream.toXML(ac);
         String response = httpClient.doCall(MAIN_URL, "/", message); //, (message));
