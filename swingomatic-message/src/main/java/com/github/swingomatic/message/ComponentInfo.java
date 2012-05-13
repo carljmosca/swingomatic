@@ -15,6 +15,7 @@ public class ComponentInfo {
     private String text;
     private String command;
     private String toolTipText;
+    private String caption;
     private int xCoordinate;
     private int yCoordinate;
     private int delay;
@@ -114,6 +115,14 @@ public class ComponentInfo {
 
     public void setyCoordinate(int yCoordinate) {
         this.yCoordinate = yCoordinate;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
     
     public String toString() {
