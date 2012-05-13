@@ -5,26 +5,21 @@
 package com.github.swingomatic.server;
 
 import com.github.swingomatic.http.Server;
-import com.github.swingomatic.http.ServerUtil;
-import com.github.swingomatic.http.SessionInfo;
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
 import com.sun.java.accessibility.util.EventQueueMonitor;
 import com.sun.java.accessibility.util.GUIInitializedListener;
 import com.sun.java.accessibility.util.SwingEventMonitor;
 import com.sun.java.accessibility.util.Translator;
-import com.thoughtworks.xstream.XStream;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.*;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.swing.JLabel;
@@ -42,7 +37,9 @@ public class Swingomatic implements
     private static int depth = 0;
     private static final int MAX_DEPTH = 100;
     private static Logger logger = Logger.getLogger(Swingomatic.class);
-    private Server server;
+    private static int SERVER_COUNT = 2;
+    private ServerSocket serverSocket;
+    private List servers = new ArrayList(0);
 
     public static void main(String s[]) {
         Swingomatic app = new Swingomatic();
@@ -57,29 +54,47 @@ public class Swingomatic implements
     private void initialize() {
         EventQueueMonitor.addGUIInitializedListener(this);
         createGUI();
+        int listenPort = 8088;
+        String listenAddress = "127.0.0.1";
         //TODO: get listen address and port port from parameter file
-        server = new Server("127.0.0.1", 8088);
-        server.addObserver(new Observer() {
+        logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
+        try {
+            //make a ServerSocket and bind it to given listenPort,
+            serverSocket = new ServerSocket(listenPort, 1024);
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
+        }
 
-            public void update(Observable o, Object arg) {
-                SessionInfo sessionInfo = (SessionInfo) arg;
-                if (sessionInfo.getOutput() != null) {
-                    XStream xstream = new XStream();
-                    logger.debug("Message from server: " + sessionInfo.getMessage() + " from XML");
-                    String message = sessionInfo.getMessage();
-                    ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
-                    ac.setResult(getUsage() + " \r\nreceived: " + ac.getCommand());
-                    if ("list-components".equalsIgnoreCase(ac.getCommand())) {
-                        ac = listComponents();
-                    } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
-                        executeCommand(ac);
-                    }
-                    sessionInfo.setResponse(xstream.toXML(ac));
-                    sendResponseToClient(sessionInfo);
-                }
-            }
-        });
-        new Thread(server).start();
+        for (int i = 0; i < SERVER_COUNT; i++) {
+            Server server = new Server(serverSocket, listenAddress);
+            servers.add(server);
+            server.addObserver(new ServerObserver(this));
+            new Thread(server).start();
+        }
+
+//        server = new Server("127.0.0.1", 8088);
+//        server.addObserver(new Observer() {
+//
+//            public void update(Observable o, Object arg) {
+//                SessionInfo sessionInfo = (SessionInfo) arg;
+//                if (sessionInfo.getOutput() != null) {
+//                    XStream xstream = new XStream();
+//                    logger.debug("Message from server: " + sessionInfo.getMessage() + " from XML");
+//                    String message = sessionInfo.getMessage();
+//                    ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
+//                    ac.setResult(getUsage() + " \r\nreceived: " + ac.getCommand());
+//                    if ("list-components".equalsIgnoreCase(ac.getCommand())) {
+//                        ac = listComponents();
+//                    } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
+//                        executeCommand(ac);
+//                    }
+//                    sessionInfo.setResponse(xstream.toXML(ac));
+//                    sendResponseToClient(sessionInfo);
+//                    ((Server)o).terminate();
+//                }
+//            }
+//        });
+//        new Thread(server).start();
     }
 
     private static void initializeLogDirectory() {
@@ -93,14 +108,14 @@ public class Swingomatic implements
         }
     }
 
-    private String getUsage() {
+    public String getUsage() {
         String result = "Usage:\r\n"
                 + "list-components\r\n"
                 + "execute<XML>";
         return result;
     }
 
-    private boolean executeCommand(ApplicationCommand ac) {
+    public boolean executeCommand(ApplicationCommand ac) {
         boolean ok = ac.getComponents() != null;
         int i = 0;
         while (ok && (i < ac.getComponents().size())) {
@@ -143,39 +158,8 @@ public class Swingomatic implements
         return ok;
     }
 
-    private void sendResponseToClient(SessionInfo sessionInfo) {
-
-        try {
-            logger.debug("sendResponseToClient:" + sessionInfo.getResponse());
-            sendMessage(sessionInfo.getOutput(),
-                    ServerUtil.construct_http_header(200, 4,
-                    sessionInfo.getResponse()));
-            //sessionInfo.getOutput().flush();
-//            sessionInfo.getOutput().close();
-//            sessionInfo.getSocket().getInputStream().close();
-//            sessionInfo.getSocket().getOutputStream().close();
-//            sessionInfo.getSocket().close();
-        } catch (Exception ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-
-    void sendMessage(DataOutputStream out, String msg) {
-        try {
-            msg = msg + '\n';
-            out.write(msg.getBytes());
-            out.flush();
-            logger.debug("sendMessage: " + msg);
-        } catch (IOException ioe) {
-            logger.error(ioe.getMessage());
-        }
-    }
-
     public void actionPerformed(ActionEvent e) {
         logger.debug("ActionEvent: " + e.getActionCommand());
-//        if ("Show Input Dialog".equals(e.getActionCommand())) {
-//            createComponentTree();
-//        }
     }
 
     public void keyTyped(KeyEvent e) {
@@ -246,7 +230,7 @@ public class Swingomatic implements
         });
     }
 
-    private ApplicationCommand listComponents() {
+    public ApplicationCommand listComponents() {
         ApplicationCommand ac = new ApplicationCommand();
         ac.setResult("OK");
         ac.setComponents(new ArrayList(0));

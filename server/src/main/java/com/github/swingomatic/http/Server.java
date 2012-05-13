@@ -23,25 +23,25 @@ import org.apache.log4j.Logger;
 public class Server extends Observable implements Runnable {
 
     private static Logger logger = Logger.getLogger(Server.class);
-    private int listenPort;
     private String listenAddress;
     private final String END_OF_MESSAGE_TAG = "</com.github.swingomatic.message.ApplicationCommand>";
+    private boolean stopRequest = false;
+    private ServerSocket serverSocket;
 
-    public Server(String listenAddress, int listenPort) {
+    public Server(ServerSocket serverSocket, String listenAddress) {
+        this.serverSocket = serverSocket;
         this.listenAddress = listenAddress;
-        this.listenPort = listenPort;
     }
 
     public void run() {
-        ServerSocket serverSocket = null;
         Socket connection = null;
         DataOutputStream out = null;
         BufferedReader in = null;
         String data = "";
         try {
-            logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
+            //logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
             //make a ServerSocket and bind it to given listenPort,
-            serverSocket = new ServerSocket(listenPort, 1024);
+            //serverSocket = new ServerSocket(listenPort, 1024);
             connection = serverSocket.accept();
             InetAddress client = connection.getInetAddress();
             // test for listen address
@@ -49,7 +49,6 @@ public class Server extends Observable implements Runnable {
             if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
                 logger.error("Listening to " + listenAddress
                         + "...ignoring client address: " + client.getHostAddress());
-                //break;
             }
 
             out = new DataOutputStream(connection.getOutputStream());
@@ -69,13 +68,14 @@ public class Server extends Observable implements Runnable {
                             break;
                         }
                     }
-                    logger.debug("read: " + data);
-                    data = processMessage(out, data);
+                    if (data.length() > 0) {
+                        data = processMessage(out, data);
+                    }
                 } catch (Exception e) {
                     logger.error(e.getMessage());
                     break;
                 }
-            } while (true);
+            } while (!stopRequest);
         } catch (IOException ioe) {
             logger.error(ioe.getMessage());
         } finally {
@@ -83,14 +83,17 @@ public class Server extends Observable implements Runnable {
             try {
                 in.close();
                 out.close();
-                serverSocket.close();
+                connection.close();
             } catch (IOException ioe) {
                 logger.error(ioe.getMessage());
             }
         }
-
     }
 
+    public synchronized void terminate() {
+        stopRequest = true;
+    }
+    
     private String processMessage(DataOutputStream out, String data) {
         String result = data;
         if (data.indexOf("<") >= 0) {
@@ -136,4 +139,5 @@ public class Server extends Observable implements Runnable {
         }
         return result;
     }
+
 }
