@@ -16,14 +16,13 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
@@ -226,10 +225,11 @@ public class Swingomatic implements
                 result.add(componentInfo);
                 componentInfo.setxCoordinate(comp.getX());
                 componentInfo.setyCoordinate(comp.getY());
-                //TODO: add ToolTipText when available               
+                componentInfo.setToolTipText(getToolTipText(comp));
                 if (comp instanceof JTextField) {
                     JTextField jTextField = (JTextField) comp;
                     componentInfo.setToolTipText(jTextField.getToolTipText());
+                    jTextField.getToolTipText();
                 }
                 if (comp instanceof JLabel) {
                     JLabel jLabel = (JLabel) comp;
@@ -241,14 +241,19 @@ public class Swingomatic implements
                                 jLabel.getText(),
                                 ""));
                     }
-//                    if ("Document Title:".equals(jLabel.getText())) {
-//                        if (jLabel.getLabelFor() != null) {
-//                            ((JTextField) jLabel.getLabelFor()).setText("hello----");
-//                        }
-//                    }
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
             }
+        }
+        return result;
+    }
+
+    private String getToolTipText(Component component) {
+        String result = "";
+        try {
+            Method getToolTipText = component.getClass().getMethod("getToolTipText", null);
+            result = (String) getToolTipText.invoke(component, null);
+        } catch (Exception ex) {
         }
         return result;
     }
@@ -277,8 +282,22 @@ public class Swingomatic implements
                         }
                     }
                 }
-//                if (!comp.getClass().toString().equals(componentInfo.getClazz())) {
-//                }
+                if (comp instanceof JButton) {
+                    JButton jButton = (JButton) comp;
+                    if (jButton.getToolTipText() != null
+                            && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
+                        jButton.doClick();
+                        result = true;
+                    }
+                }
+                if (comp instanceof JToggleButton) {
+                    JToggleButton jButton = (JToggleButton) comp;
+                    if (jButton.getToolTipText() != null
+                            && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
+                        jButton.doClick();
+                        result = true;
+                    }
+                }
                 if (!result) {
                     result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
                 }
