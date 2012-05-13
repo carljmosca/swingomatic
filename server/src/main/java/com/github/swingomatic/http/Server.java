@@ -7,7 +7,6 @@ package com.github.swingomatic.http;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -34,129 +33,99 @@ public class Server extends Observable implements Runnable {
     }
 
     public void run() {
-        ServerSocket serversocket;
+        ServerSocket serverSocket = null;
+        Socket connection = null;
+        DataOutputStream out = null;
+        BufferedReader in = null;
+        String data = "";
         try {
             logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
             //make a ServerSocket and bind it to given listenPort,
-            serversocket = new ServerSocket(listenPort);
-        } catch (Exception e) { //catch any errors and print errors to gui
-            sendMessage(null, null, "Fatal Error:" + e.getMessage());
-            logger.error("Fatal error: " + e.getMessage());
-            return;
-        }
-        //go in a infinite loop, wait for connections, process request, send response
-        while (true) {
-            logger.debug("Ready, Waiting for requests...");
-            Socket connectionsocket = null;
-            if (connectionsocket != null && !connectionsocket.isClosed()) {
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException ex) {
-                    logger.error(ex.getMessage());
-                }
-            } else {
-                try {
-                    //this call waits/blocks until someone connects to the listenPort we
-                    //are listening to
-                    connectionsocket = serversocket.accept();
-                    InetAddress client = connectionsocket.getInetAddress();
-                    // test for listen address
-                    logger.debug("Client address: " + client.getHostAddress());
-                    if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
-                        logger.error("Listening to " + listenAddress
-                                + "...ignoring client address: " + client.getHostAddress());
-                        break;
-                    }
-                    sendMessage(null, null, client.getHostName() + " connected to server.\n");
-                    //Read the http request from the client from the socket interface
-                    //into a buffer.
-                    //BufferedReader input = new BufferedReader(new InputStreamReader(connectionsocket.getInputStream()));
-                    //Prepare a outputstream from us to the client,
-                    //this will be used sending back our response
-                    //(header + requested file) to the client.
-                    DataOutputStream output = new DataOutputStream(connectionsocket.getOutputStream());
-
-                    http_handler(connectionsocket, connectionsocket.getInputStream(), output);
-                    //input.close();
-                    //connectionsocket.getInputStream().close();
-                } catch (Exception e) { //catch any errors, and print them
-                    sendMessage(null, null, "\nError:" + e.getMessage());
-                }
+            serverSocket = new ServerSocket(listenPort, 1024);
+            connection = serverSocket.accept();
+            InetAddress client = connection.getInetAddress();
+            // test for listen address
+            logger.debug("Client address: " + client.getHostAddress());
+            if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
+                logger.error("Listening to " + listenAddress
+                        + "...ignoring client address: " + client.getHostAddress());
+                //break;
             }
-        } //go back in loop, wait for next request
+
+            out = new DataOutputStream(connection.getOutputStream());
+            out.flush();
+            in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            do {
+                try {
+                    char[] charData = new char[1024];
+                    int r = 1;
+                    while (r > 0) {
+                        r = in.read(charData, 0, 1024);
+                        if (r > 0) {
+                            data = data + new String(charData, 0, r);
+                            logger.debug("data:: " + data);
+                        }
+                        if (r < 1024) {
+                            break;
+                        }
+                    }
+                    logger.debug("read: " + data);
+                    data = processMessage(out, data);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    break;
+                }
+            } while (true);
+        } catch (IOException ioe) {
+            logger.error(ioe.getMessage());
+        } finally {
+            //4: Closing connection
+            try {
+                in.close();
+                out.close();
+                serverSocket.close();
+            } catch (IOException ioe) {
+                logger.error(ioe.getMessage());
+            }
+        }
+
     }
 
-//    private void http_handler(BufferedReader input, DataOutputStream output) {
-    private void http_handler(Socket socket, InputStream input, DataOutputStream output) {
-        //String http = new String(); //a bunch of strings to hold
-        //String path = new String(); //the various things, what http v, what path,
-        String data = "";
-        try {
-            //This is the two types of request we can handle
-            //GET /index.html HTTP/1.0
-            //HEAD /index.html HTTP/1.0
+    private String processMessage(DataOutputStream out, String data) {
+        String result = data;
+        if (data.indexOf("<") >= 0) {
+            data = data.substring(data.indexOf("<"));
 
-            data = readInput(input);
-            //String data = "";
-//            char[] buffer = new char[1024];
-//            try {
-//                while (true) {
-//                    int r = input.read(buffer, 0, 1024);
-//                    path = path + new String(buffer);
-//                    if (r != 1024) {
-//                        break;
-//                    }
-//                }
-//            } catch (IOException ioe) {
-//                logger.error(ioe.getMessage());
-//            }
-            if (data.indexOf("<") >= 0) {
-                data = data.substring(data.indexOf("<"));
-            }
             int p = data.indexOf(END_OF_MESSAGE_TAG);
             if (p >= 0) {
                 data = data.substring(0, p + END_OF_MESSAGE_TAG.length());
+                logger.debug("data to sendMessage:" + data);
+                sendMessage(out, data);
+                result = "";
             }
-            logger.debug("data to sendMessage:" + data);
-            sendMessage(socket, output, data);
-            return;
-        } catch (Exception e) {
-            sendMessage(socket, output, "error" + e.getMessage());
         }
-
-        sendMessage(socket, output, "\nClient requested:" + data + "\n");
-        try {
-            output.writeBytes(ServerUtil.construct_http_header(404, 0, ""));
-        } catch (IOException ex) {
-            logger.error(ex.getMessage());
-        }
-        try {
-            output.writeBytes(ServerUtil.construct_http_header(200, 5, ""));
-            //clean up the files, close open handles
-            //output.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
+        return result;
     }
 
-    private void sendMessage(Socket socket,
-            DataOutputStream output, String message) {
+    private void sendMessage(DataOutputStream output, String message) {
         SessionInfo sessionInfo = new SessionInfo();
         sessionInfo.setOutput(output);
-        sessionInfo.setSocket(socket);
         sessionInfo.setMessage(message);
         setChanged();
         notifyObservers(sessionInfo);
     }
 
-    private String readInput(InputStream input) {
+    private String readInput(BufferedReader input) {
         String result = "";
-        byte[] buffer = new byte[1024];
+        char[] buffer = new char[1024];
         try {
             while (true) {
                 int r = input.read(buffer, 0, 1024);
-                result = result + new String(buffer);
-                if ((r < 0) || (r != 1024)) {
+                if (r > 0) {
+                    result = result + new String(buffer, 0, r);
+                }
+                logger.debug(r + " characters read");
+                if (r < 1024) {
                     break;
                 }
             }

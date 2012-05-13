@@ -18,8 +18,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,8 +30,6 @@ import javax.accessibility.AccessibleContext;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.TreePath;
@@ -68,7 +65,7 @@ public class Swingomatic implements
                 SessionInfo sessionInfo = (SessionInfo) arg;
                 if (sessionInfo.getOutput() != null) {
                     XStream xstream = new XStream();
-                    logger.debug("Message from server: " + sessionInfo.getMessage());
+                    logger.debug("Message from server: " + sessionInfo.getMessage() + " from XML");
                     String message = sessionInfo.getMessage();
                     ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
                     ac.setResult(getUsage() + " \r\nreceived: " + ac.getCommand());
@@ -107,6 +104,7 @@ public class Swingomatic implements
         boolean ok = ac.getComponents() != null;
         int i = 0;
         while (ok && (i < ac.getComponents().size())) {
+            logger.debug("processing component " + i);
             if (ac.getComponents().get(i) instanceof ComponentInfo) {
                 ComponentInfo ci = (ComponentInfo) ac.getComponents().get(i);
                 ok = processComponent(ci);
@@ -117,6 +115,7 @@ public class Swingomatic implements
                 ac.setResult("Error: " + i);
                 ok = false;
             }
+            i++;
         }
         return ok;
     }
@@ -136,29 +135,39 @@ public class Swingomatic implements
         }
         for (int i = 0; i < wins.length; i++) {
             ok = processComponentNodes(wins[i], root, componentInfo);
+            if (ok) {
+                break;
+            }
         }
         logger.debug("end processCompent - result: " + ok);
         return ok;
     }
 
     private void sendResponseToClient(SessionInfo sessionInfo) {
-        if (sessionInfo.getSocket() == null) {
-            return;
-        }
-//        if ((sessionInfo.getOutput() == null) || (sessionInfo.getResponse() != null)) {
-//            return;
-//        }
+
         try {
             logger.debug("sendResponseToClient:" + sessionInfo.getResponse());
-            sessionInfo.getOutput().writeBytes(ServerUtil.construct_http_header(200, 4,
+            sendMessage(sessionInfo.getOutput(),
+                    ServerUtil.construct_http_header(200, 4,
                     sessionInfo.getResponse()));
             //sessionInfo.getOutput().flush();
 //            sessionInfo.getOutput().close();
 //            sessionInfo.getSocket().getInputStream().close();
 //            sessionInfo.getSocket().getOutputStream().close();
-            sessionInfo.getSocket().close();
-        } catch (IOException ex) {
+//            sessionInfo.getSocket().close();
+        } catch (Exception ex) {
             logger.error(ex.getMessage());
+        }
+    }
+
+    void sendMessage(DataOutputStream out, String msg) {
+        try {
+            msg = msg + '\n';
+            out.write(msg.getBytes());
+            out.flush();
+            logger.debug("sendMessage: " + msg);
+        } catch (IOException ioe) {
+            logger.error(ioe.getMessage());
         }
     }
 
@@ -170,7 +179,7 @@ public class Swingomatic implements
     }
 
     public void keyTyped(KeyEvent e) {
-        logger.debug("Key typed KeyEvent: " + e.getKeyChar());
+        //logger.debug("Key typed KeyEvent: " + e.getKeyChar());
     }
 
     public void keyPressed(KeyEvent e) {
@@ -302,9 +311,7 @@ public class Swingomatic implements
                 if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
                     logger.debug("ofLabel and JLabel found");
                     JLabel jLabel = (JLabel) comp;
-                    if (jLabel.getLabelFor() == null) {
-                        logger.debug("jLabel with null LabelFor found: " + jLabel.getText());
-                    } else if (jLabel.getText().equals(componentInfo.getOfLabel())) {
+                    if ((jLabel.getLabelFor() != null) && (jLabel.getText().equals(componentInfo.getOfLabel()))) {
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
                         logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
                         if (jLabel.getLabelFor() instanceof JTextField) {
@@ -314,10 +321,6 @@ public class Swingomatic implements
                     }
                 }
 //                if (!comp.getClass().toString().equals(componentInfo.getClazz())) {
-//                    continue; // no match, continue
-//                }
-//                if (comp instanceof JLabel) {
-//                    JLabel jLabel = (JLabel) comp;
 //                }
                 result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
             }
@@ -389,14 +392,14 @@ public class Swingomatic implements
     }
 
     public void insertUpdate(DocumentEvent e) {
-        logger.debug("DocumentEvent insertUpdate" + e.toString());
+        //logger.debug("DocumentEvent insertUpdate" + e.toString());
     }
 
     public void removeUpdate(DocumentEvent e) {
-        logger.debug("DocumentEvent removeUpdate" + e.getDocument().toString());
+        //logger.debug("DocumentEvent removeUpdate" + e.getDocument().toString());
     }
 
     public void changedUpdate(DocumentEvent e) {
-        logger.debug("DocumentEvent changedUpdate" + e.toString());
+        //logger.debug("DocumentEvent changedUpdate" + e.toString());
     }
 }

@@ -5,6 +5,7 @@
 package com.github.swingomatic.http;
 
 import java.io.DataOutputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
