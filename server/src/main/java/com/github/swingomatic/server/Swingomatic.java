@@ -176,10 +176,6 @@ public class Swingomatic implements
         SwingEventMonitor.addFocusListener(new FocusListener() {
 
             public void focusGained(FocusEvent e) {
-                if ("class com.ams.momentum.widgets.ComboBox".equals(e.getComponent().getClass().toString())) {
-                    listComponents();
-                }
-                logger.debug("focusGained: " + e.getComponent().getClass().toString());
             }
 
             public void focusLost(FocusEvent e) {
@@ -188,12 +184,6 @@ public class Swingomatic implements
         SwingEventMonitor.addContainerListener(new ContainerListener() {
 
             public void componentAdded(ContainerEvent e) {
-                if ("seeThroughGlassPane".equals(e.getChild().getName())
-                        || "null.glassPane".equals(e.getChild().getName())) {
-                    listComponents();
-
-                }
-                logger.debug("ComponentAdded: " + e.getChild().getName());
             }
 
             public void componentRemoved(ContainerEvent e) {
@@ -221,25 +211,17 @@ public class Swingomatic implements
             int count = ((Container) c).getComponentCount();
             for (int i = 0; i < count; i++) {
                 Component comp = ((Container) c).getComponent(i);
-                ComponentInfo componentInfo = new ComponentInfo(comp.getName(), comp.getClass().toString());
+                ComponentInfo componentInfo = new ComponentInfo();
+                setComponentInfoProperties(comp, componentInfo);
                 result.add(componentInfo);
-                componentInfo.setxCoordinate(comp.getX());
-                componentInfo.setyCoordinate(comp.getY());
-                componentInfo.setToolTipText(getToolTipText(comp));
-                if (comp instanceof JTextField) {
-                    JTextField jTextField = (JTextField) comp;
-                    componentInfo.setToolTipText(jTextField.getToolTipText());
-                    jTextField.getToolTipText();
-                }
                 if (comp instanceof JLabel) {
                     JLabel jLabel = (JLabel) comp;
-                    ((ComponentInfo) result.get(result.size() - 1)).setText(jLabel.getText());
                     if (jLabel.getLabelFor() != null) {
                         Component ofComponent = jLabel.getLabelFor();
-                        result.add(new ComponentInfo(ofComponent.getName(),
-                                ofComponent.getClass().toString(),
-                                jLabel.getText(),
-                                ""));
+                        componentInfo = new ComponentInfo();
+                        setComponentInfoProperties(ofComponent, componentInfo,
+                                jLabel.getText());
+                        result.add(componentInfo);
                     }
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
@@ -248,10 +230,29 @@ public class Swingomatic implements
         return result;
     }
 
-    private String getToolTipText(Component component) {
+    private void setComponentInfoProperties(Component component,
+            ComponentInfo componentInfo) {
+        setComponentInfoProperties(component, componentInfo, null);
+    }
+
+    private void setComponentInfoProperties(Component component,
+            ComponentInfo componentInfo, String ofLabel) {
+        componentInfo.setName(component.getName());
+        componentInfo.setClazz(component.getClass().toString());
+        componentInfo.setxCoordinate(component.getX());
+        componentInfo.setyCoordinate(component.getY());
+        componentInfo.setToolTipText(getComponentPropertyValue(component, "getToolTipText"));
+        componentInfo.setText(getComponentPropertyValue(component, "getText"));
+        componentInfo.setCaption(getComponentPropertyValue(component, "getCaption"));
+        if (ofLabel != null) {
+            componentInfo.setOfLabel(ofLabel);
+        }
+    }
+
+    private String getComponentPropertyValue(Component component, String propertyGetter) {
         String result = "";
         try {
-            Method getToolTipText = component.getClass().getMethod("getToolTipText", null);
+            Method getToolTipText = component.getClass().getMethod(propertyGetter, null);
             result = (String) getToolTipText.invoke(component, null);
         } catch (Exception ex) {
         }
