@@ -4,7 +4,6 @@
  */
 package com.github.swingomatic.server;
 
-import com.github.swingomatic.http.Server;
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
 import com.sun.java.accessibility.util.EventQueueMonitor;
@@ -64,7 +63,7 @@ public class Swingomatic implements
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
-        
+
         for (int i = 0; i < SERVER_COUNT; i++) {
             servers.add(new ServerObserver(this, serverSocket, listenAddress));
         }
@@ -280,8 +279,9 @@ public class Swingomatic implements
                 }
 //                if (!comp.getClass().toString().equals(componentInfo.getClazz())) {
 //                }
-                if (!result)
-                result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
+                if (!result) {
+                    result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
+                }
             }
         }
         // if we reach this point, we have not found the component and therefore
