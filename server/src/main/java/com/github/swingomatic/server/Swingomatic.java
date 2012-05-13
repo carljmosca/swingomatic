@@ -258,11 +258,12 @@ public class Swingomatic implements
             ComponentInfo componentInfo) {
         boolean result = false;
         ComponentObject me;
+        logger.debug("processing " + componentInfo.toString());
         me = new ComponentObject(c);
         root.add(me);
         if (c instanceof Container) {
             int count = ((Container) c).getComponentCount();
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count && !result; i++) {
                 Component comp = ((Container) c).getComponent(i);
                 logger.debug("processCompoentNodes: " + comp.getClass().toString());
                 if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
@@ -273,12 +274,13 @@ public class Swingomatic implements
                         logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
                         if (jLabel.getLabelFor() instanceof JTextField) {
                             ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
-                            return true;
+                            result = true;
                         }
                     }
                 }
 //                if (!comp.getClass().toString().equals(componentInfo.getClazz())) {
 //                }
+                if (!result)
                 result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
             }
         }
