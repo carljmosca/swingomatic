@@ -64,37 +64,10 @@ public class Swingomatic implements
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
-
+        
         for (int i = 0; i < SERVER_COUNT; i++) {
-            Server server = new Server(serverSocket, listenAddress);
-            servers.add(server);
-            server.addObserver(new ServerObserver(this));
-            new Thread(server).start();
+            servers.add(new ServerObserver(this, serverSocket, listenAddress));
         }
-
-//        server = new Server("127.0.0.1", 8088);
-//        server.addObserver(new Observer() {
-//
-//            public void update(Observable o, Object arg) {
-//                SessionInfo sessionInfo = (SessionInfo) arg;
-//                if (sessionInfo.getOutput() != null) {
-//                    XStream xstream = new XStream();
-//                    logger.debug("Message from server: " + sessionInfo.getMessage() + " from XML");
-//                    String message = sessionInfo.getMessage();
-//                    ApplicationCommand ac = (ApplicationCommand) xstream.fromXML(message);
-//                    ac.setResult(getUsage() + " \r\nreceived: " + ac.getCommand());
-//                    if ("list-components".equalsIgnoreCase(ac.getCommand())) {
-//                        ac = listComponents();
-//                    } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
-//                        executeCommand(ac);
-//                    }
-//                    sessionInfo.setResponse(xstream.toXML(ac));
-//                    sendResponseToClient(sessionInfo);
-//                    ((Server)o).terminate();
-//                }
-//            }
-//        });
-//        new Thread(server).start();
     }
 
     private static void initializeLogDirectory() {

@@ -11,6 +11,7 @@ import com.github.swingomatic.message.ApplicationCommand;
 import com.thoughtworks.xstream.XStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Observable;
 import java.util.Observer;
 import org.apache.log4j.Logger;
@@ -23,9 +24,22 @@ public class ServerObserver implements Observer {
     
     private static Logger logger = Logger.getLogger(ServerObserver.class);
     private Swingomatic swingomatic;
+    private Server server;
+    private ServerSocket serverSocket;
+    private String listenAddress;
     
-    public ServerObserver(Swingomatic swingomatic) {
+    public ServerObserver(Swingomatic swingomatic, ServerSocket serverSocket,
+            String listenAddress) {
         this.swingomatic = swingomatic;
+        this.serverSocket = serverSocket;
+        this.listenAddress = listenAddress;
+        createServer();
+    }
+    
+    private void createServer() {
+        server = new Server(serverSocket, listenAddress);
+        server.addObserver(this);
+        new Thread(server).start();
     }
     
     public void update(Observable o, Object arg) {
@@ -44,6 +58,7 @@ public class ServerObserver implements Observer {
             sessionInfo.setResponse(xstream.toXML(ac));
             sendResponseToClient(sessionInfo);
             ((Server) o).terminate();
+            createServer();
         }
     }
     public void sendResponseToClient(SessionInfo sessionInfo) {
