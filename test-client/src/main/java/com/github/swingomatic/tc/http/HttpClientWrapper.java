@@ -149,7 +149,7 @@ public class HttpClientWrapper {
                 if (r > 0) {
                     l = l + new String(charBuffer, 0, r);
                 }
-                if (r < 1024) {
+                if (r < 0) {
                     break;
                 }
             }
