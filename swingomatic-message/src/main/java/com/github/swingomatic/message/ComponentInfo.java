@@ -20,6 +20,7 @@ public class ComponentInfo {
     private int yCoordinate;
     private int delay;
     private int retries;
+    private boolean selected;
     
     public ComponentInfo() {
         
@@ -123,6 +124,14 @@ public class ComponentInfo {
 
     public void setCaption(String caption) {
         this.caption = caption;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
     
     public String toString() {
