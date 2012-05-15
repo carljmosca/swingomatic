@@ -10,14 +10,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 import org.apache.log4j.Logger;
+import org.javafxdata.control.cell.CheckBoxTableCell;
 
 /**
  *
@@ -84,16 +83,31 @@ public class Main implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        colSelected.setCellFactory(new Callback() {
+           Callback<TableColumn, TableCell> selectecCellFactory = new Callback<TableColumn, TableCell>() {
 
             @Override
-            public Object call(Object p) {
-                ComponentInfo componentInfo = (ComponentInfo)p;
-                ObservableBooleanValue bp = new SimpleBooleanProperty(componentInfo, "selected");
-                return bp;
+            public TableCell call(final TableColumn param) {
+                final CheckBox checkBox = new CheckBox();
+                final CheckBoxTableCell cell = new CheckBoxTableCell() {
+
+                    @Override
+                    public void updateItem(Object item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null) {
+                            checkBox.setDisable(true);
+                            checkBox.setSelected(false);
+                        } else {
+                            checkBox.setDisable(false);
+                            checkBox.setSelected(item.toString().equals("Yes") ? true : false);
+                            commitEdit(checkBox.isSelected() ? "Yes" : "No");
+                        }
+                    }
+                };
+                cell.setGraphic(checkBox);
+                return cell;
             }
-        });
-        //colSelected.setCellFactory(new CheckBoxCellFactory());
-        //colSelected.setCellValueFactory(n);
+        };
+ 
+        colSelected.setCellFactory(selectecCellFactory);
     }
 }
