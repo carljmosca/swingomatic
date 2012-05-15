@@ -9,7 +9,8 @@ import com.github.swingomatic.message.ComponentInfo;
 import com.github.swingomatic.tc.http.HttpClientWrapper;
 import com.thoughtworks.xstream.XStream;
 import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -30,8 +31,8 @@ public class Client {
         return (ApplicationCommand) xstream.fromXML(response);
     }
     
-    public List<ComponentInfo> getComponentInfoList(ApplicationCommand applicationCommand) {
-        List<ComponentInfo> list = new ArrayList<ComponentInfo>(0);
+    public ObservableList<ComponentInfo> getComponentInfoList(ApplicationCommand applicationCommand) {
+        ObservableList<ComponentInfo> list = FXCollections.observableList(new ArrayList<ComponentInfo>(0));
         for (Object object : applicationCommand.getComponents()) {
             if (object instanceof ComponentInfo) {
                 list.add((ComponentInfo)object);
