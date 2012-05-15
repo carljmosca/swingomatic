@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import org.apache.log4j.Logger;
@@ -30,7 +31,15 @@ public class Main {
     }
     
     @FXML
+    private void btnGenerateAction(ActionEvent event) {
+        createOutput();
+    }
+    
+    @FXML
     private TextField txtServerAddress;
+    
+    @FXML
+    private Label lblStatus;
     
     @FXML
     private TableView tblList;
@@ -53,12 +62,15 @@ public class Main {
                     List<ComponentInfo> list = ac.getComponents();
                     tblList.getItems().clear();
                     tblList.getItems().addAll(list);
+                    lblStatus.setText("Done");
                 } catch (Exception ex) {
-                    logger.error(ex.getMessage());
+                    lblStatus.setText(ex.getMessage());
                 }
             }
         });
-
-
+    }
+    
+    private void createOutput() {
+        
     }
 }
