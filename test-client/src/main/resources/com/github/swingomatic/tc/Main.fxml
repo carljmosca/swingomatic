@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="615.0" prefWidth="834.0" styleClass="root" xmlns:fx="http://javafx.com/fxml" fxcontroller="com.github.swingomatic.tc.controller.Main">
+<AnchorPane id="AnchorPane" prefHeight="615.0" prefWidth="834.0" styleClass="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.swingomatic.tc.Main">
   <children>
     <Button id="button1" fx:id="btnList" onAction="#btnListAction" layoutX="758.0" layoutY="580.0" prefWidth="62.0" text="List" />
     <TableView id="tableView1" fx:id="tblList" prefHeight="546.0" prefWidth="806.0" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">

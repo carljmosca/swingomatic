@@ -2,12 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.github.swingomatic.tc.controller;
+package com.github.swingomatic.tc;
 
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
-import com.github.swingomatic.tc.Client;
 import java.util.List;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableView;
 import org.apache.log4j.Logger;
 
 /**
@@ -16,9 +19,19 @@ import org.apache.log4j.Logger;
  */
 public class Main {
 
+    @FXML
+    private Button btnList;
+
+    @FXML
+    private void btnListAction(ActionEvent event) {
+    }
+    
+    @FXML
+    private TableView tblList;
+
     private static Logger logger = Logger.getLogger(Main.class);
 
-    public void init(boolean show) {
+    public void load() {
         Client client = new Client();
         ApplicationCommand ac = new ApplicationCommand();
         ac.setCommand("list-components");
@@ -31,7 +44,6 @@ public class Main {
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
-        
+
     }
-    
 }
