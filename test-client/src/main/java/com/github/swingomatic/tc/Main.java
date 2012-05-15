@@ -6,15 +6,17 @@ package com.github.swingomatic.tc;
 
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
-import com.github.swingomatic.tc.ui.CheckBoxCellFactory;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.util.Callback;
 import org.apache.log4j.Logger;
 
 /**
@@ -81,7 +83,17 @@ public class Main implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        colSelected.setCellFactory(new CheckBoxCellFactory());
+
+        colSelected.setCellFactory(new Callback() {
+
+            @Override
+            public Object call(Object p) {
+                ComponentInfo componentInfo = (ComponentInfo)p;
+                ObservableBooleanValue bp = new SimpleBooleanProperty(componentInfo, "selected");
+                return bp;
+            }
+        });
+        //colSelected.setCellFactory(new CheckBoxCellFactory());
         //colSelected.setCellValueFactory(n);
     }
 }
