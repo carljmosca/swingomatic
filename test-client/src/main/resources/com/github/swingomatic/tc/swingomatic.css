@@ -1,0 +1,62 @@
+.root {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Tahoma";
+    -fx-jfinsys-frame-bgcolor: #4E90B1;
+    -fx-jfinsys-anchorpane-bgcolor:  #DDDEDD;
+}
+
+#background {
+    -light-black: rgb(74, 75, 78);
+    -dark-highlight: rgb(87, 89, 92);
+    -dark-black: rgb(39, 40, 40);
+    -darkest-black: rgb(5, 5, 5);
+    -mid-gray: rgb(216, 222, 227);
+    -fx-background-color: -mid-gray;
+}
+
+/* When set in root it doesn't work */
+.label {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Tahoma";
+}
+
+.table-view {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Tahoma";
+}
+
+.anchorpane-border { 
+    -fx-background-insets: 2;
+    -fx-border-color: #000000;
+    -fx-border-style: solid;
+}
+.anchorpane-bgcolor {
+    /*   -fx-background-color: #D4D4D5; */
+    -fx-background-color: #DDDEDD;
+}
+
+.anchorpane-footer-bgcolor {
+    -fx-background-color: #4E90B1;
+}
+.tab-pane *.tab-header-background {
+    -fx-background-color: #4E90B1;
+    -fx-border-color: transparent transparent silver transparent;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-font-size: 12pt;
+}
+
+.table-view .column-header .label {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 3px;
+}
+
+.table-view {
+    -fx-font-size: 12pt;
+    -fx-font-family: "Tahoma";
+}
+
+
+
+
