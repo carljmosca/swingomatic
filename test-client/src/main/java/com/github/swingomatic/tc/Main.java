@@ -41,6 +41,8 @@ public class Main {
             for (ComponentInfo componentInfo : list) {
                 System.out.println(componentInfo.toString());
             }
+            tblList.getItems().clear();
+            tblList.getItems().addAll(list);
         } catch (Exception ex) {
             logger.error(ex.getMessage());
         }
