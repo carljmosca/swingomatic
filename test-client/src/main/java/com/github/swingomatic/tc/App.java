@@ -4,24 +4,25 @@
  */
 package com.github.swingomatic.tc;
 
-import com.github.swingomatic.tc.controller.Main;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  *
  * @author moscac
  */
-public class App {
-  
+public class App extends Application {
+
     public static void main(String[] args) {
-        App app = new App();
-        app.run();
+        launch(args);
     }
 
-    public void run() {
-
-        Main main = new Main();
-        main.init(true);
-
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.setTitle("FXML TableView Example");
+        stage.setScene((Scene) FXMLLoader.load(getClass().getResource("fxml_tableview.fxml")));
+        stage.show();
     }
-  
 }
