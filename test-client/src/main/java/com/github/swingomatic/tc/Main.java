@@ -6,21 +6,22 @@ package com.github.swingomatic.tc;
 
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
+import com.github.swingomatic.tc.ui.CheckBoxCellFactory;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author Carl J. Mosca
  */
-public class Main {
+public class Main implements Initializable {
 
     @FXML
     private Button btnList;
@@ -43,6 +44,10 @@ public class Main {
     
     @FXML
     private TableView tblList;
+    
+    @FXML
+    private TableColumn colSelected;
+            
     private static Logger logger = Logger.getLogger(Main.class);
 
     public void load() {
@@ -72,5 +77,11 @@ public class Main {
     
     private void createOutput() {
         
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        colSelected.setCellFactory(new CheckBoxCellFactory());
+        //colSelected.setCellValueFactory(n);
     }
 }
