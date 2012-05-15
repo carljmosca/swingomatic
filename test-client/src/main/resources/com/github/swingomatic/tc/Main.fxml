@@ -9,8 +9,8 @@
 
 <AnchorPane id="AnchorPane" prefHeight="615.0" prefWidth="834.0" styleClass="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.swingomatic.tc.Main">
   <children>
-    <Button id="button1" fx:id="btnList" onAction="#btnListAction" layoutX="758.0" layoutY="580.0" prefWidth="62.0" text="List" />
-    <TableView id="tableView1" fx:id="tblList" prefHeight="546.0" prefWidth="806.0" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+    <Button id="button1" fx:id="btnList" onAction="#btnListAction" prefWidth="62.0" text="List" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+    <TableView id="tableView1" fx:id="tblList" prefHeight="551.0" prefWidth="806.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="50.0">
       <columns>
         <TableColumn prefWidth="75.0" text="Name" fx:id="colName" />
         <TableColumn prefWidth="75.0" text="Class" fx:id="colClass" />
@@ -22,6 +22,8 @@
         <TableColumn prefWidth="75.0" text="Selected" fx:id="colSelected" />
       </columns>
     </TableView>
+    <TextField id="textField1" fx:id="txtServerAddress" prefWidth="613.0" AnchorPane.leftAnchor="116.0" AnchorPane.rightAnchor="105.0" AnchorPane.topAnchor="14.0" />
+    <Label id="label1" fx:id="lblServerAddress" layoutX="14.0" layoutY="17.0" prefWidth="102.0" text="Server Address:" />
   </children>
   <stylesheets>
     <URL value="@swingomatic.css" />
