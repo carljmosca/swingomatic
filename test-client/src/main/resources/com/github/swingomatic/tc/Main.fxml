@@ -47,7 +47,9 @@
                 <TableColumn prefWidth="75.0" text="Selected" fx:id="colSelected" />
             </columns>
         </TableView>
-        <TextField id="textField1" fx:id="txtServerAddress" prefWidth="613.0" AnchorPane.leftAnchor="116.0" AnchorPane.rightAnchor="105.0" AnchorPane.topAnchor="14.0" />
+        <TextField id="textField1" fx:id="txtServerAddress" prefWidth="613.0" text="http://localhost:8088"
+        AnchorPane.leftAnchor="116.0" AnchorPane.rightAnchor="105.0" 
+        AnchorPane.topAnchor="14.0" />
         <Label id="label1" fx:id="lblServerAddress" layoutX="14.0" layoutY="17.0" prefWidth="102.0" text="Server Address:" />
     </children>
     <stylesheets>
