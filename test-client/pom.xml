@@ -77,5 +77,10 @@
             <artifactId>swingomatic-client</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
     </dependencies>
 </project>

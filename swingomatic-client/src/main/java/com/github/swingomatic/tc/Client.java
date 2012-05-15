@@ -5,8 +5,11 @@
 package com.github.swingomatic.tc;
 
 import com.github.swingomatic.message.ApplicationCommand;
+import com.github.swingomatic.message.ComponentInfo;
 import com.github.swingomatic.tc.http.HttpClientWrapper;
 import com.thoughtworks.xstream.XStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,7 +17,7 @@ import com.thoughtworks.xstream.XStream;
  */
 public class Client {
 
-    public ApplicationCommand testApplicationCommandExecute(String serverURL,
+    public ApplicationCommand execute(String serverURL,
             ApplicationCommand applicationCommand) throws Exception {
         
         XStream xstream = new XStream();
@@ -25,5 +28,15 @@ public class Client {
             response = response.substring(p + 2);
         }
         return (ApplicationCommand) xstream.fromXML(response);
+    }
+    
+    public List<ComponentInfo> getComponentInfoList(ApplicationCommand applicationCommand) {
+        List<ComponentInfo> list = new ArrayList<ComponentInfo>(0);
+        for (Object object : applicationCommand.getComponents()) {
+            if (object instanceof ComponentInfo) {
+                list.add((ComponentInfo)object);
+            }
+        }
+        return list;
     }
 }
