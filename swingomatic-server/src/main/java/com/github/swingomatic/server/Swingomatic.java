@@ -6,6 +6,7 @@ package com.github.swingomatic.server;
 
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
+import com.github.swingomatic.util.PropertyManager;
 import com.sun.java.accessibility.util.EventQueueMonitor;
 import com.sun.java.accessibility.util.GUIInitializedListener;
 import com.sun.java.accessibility.util.SwingEventMonitor;
@@ -52,9 +53,8 @@ public class Swingomatic implements
     private void initialize() {
         EventQueueMonitor.addGUIInitializedListener(this);
         createGUI();
-        int listenPort = 8088;
-        String listenAddress = "127.0.0.1";
-        //TODO: get listen address and port port from parameter file
+        int listenPort = PropertyManager.getInstance().getServerPort();
+        String listenAddress = PropertyManager.getInstance().getClientAddress();
         logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
         try {
             //make a ServerSocket and bind it to given listenPort,
