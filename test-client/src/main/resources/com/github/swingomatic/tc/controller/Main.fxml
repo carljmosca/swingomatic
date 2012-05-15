@@ -1,1 +1,29 @@
-ECHO is on.
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="615.0" prefWidth="834.0" styleClass="root" xmlns:fx="http://javafx.com/fxml">
+  <children>
+    <Button id="button1" fx:id="btnList" layoutX="758.0" layoutY="580.0" prefWidth="62.0" text="List" />
+    <TableView id="tableView1" fx:id="tblList" prefHeight="546.0" prefWidth="806.0" AnchorPane.bottomAnchor="55.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+      <columns>
+        <TableColumn prefWidth="75.0" text="Name" fx:id="colName" />
+        <TableColumn prefWidth="75.0" text="Class" fx:id="colClass" />
+        <TableColumn prefWidth="120.0" text="Text" fx:id="colText" />
+        <TableColumn prefWidth="75.0" text="Of Label" fx:id="colOfLabel" />
+        <TableColumn prefWidth="120.0" text="Tool Tip" fx:id="colToolTipText" />
+        <TableColumn prefWidth="75.0" text="Caption" fx:id="colCaption" />
+        <TableColumn prefWidth="75.0" text="X/Y" fx:id="colXY" />
+        <TableColumn prefWidth="75.0" text="Selected" fx:id="colSelected" />
+      </columns>
+    </TableView>
+  </children>
+  <stylesheets>
+    <URL value="@swingomatic.css" />
+  </stylesheets>
+</AnchorPane>
