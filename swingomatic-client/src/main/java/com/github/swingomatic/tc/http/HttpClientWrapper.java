@@ -18,10 +18,10 @@ public class HttpClientWrapper {
      */
     private static final Logger LOGGER = Logger.getLogger(HttpClientWrapper.class.getName());
 
-    public static String doCall(String hostAddress, String path, String query) {
+    public static String doCall(String hostAddress, String path, String query) throws Exception {
         boolean isSecure = false;
         StringBuilder result = new StringBuilder();
-        try {
+
             int port = 80;
             if (hostAddress.startsWith("http://")) {
                 hostAddress = hostAddress.substring(7);
@@ -73,11 +73,7 @@ public class HttpClientWrapper {
             result.append(data);
             pw.close();
             br.close();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(HttpClientWrapper.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(HttpClientWrapper.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
         return result.toString();
     }
 }
