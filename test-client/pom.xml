@@ -109,10 +109,5 @@
             <version>2.1.0-beta-b15</version>
 <!--            <scope>provided</scope>-->
         </dependency>
-        <dependency>
-            <groupId>org.datafx</groupId>
-            <artifactId>datafx-samples</artifactId>
-            <version>0.0.7-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 </project>

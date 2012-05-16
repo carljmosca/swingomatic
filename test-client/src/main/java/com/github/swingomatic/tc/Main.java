@@ -6,17 +6,20 @@ package com.github.swingomatic.tc;
 
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
+import com.github.swingomatic.tc.ui.CheckBoxCell;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 import org.apache.log4j.Logger;
-import org.javafxdata.control.cell.CheckBoxTableCell;
 
 /**
  *
@@ -31,25 +34,21 @@ public class Main implements Initializable {
     private void btnListAction(ActionEvent event) {
         load();
     }
-    
+
     @FXML
     private void btnGenerateAction(ActionEvent event) {
         createOutput();
     }
-    
     @FXML
     private TextField txtServerAddress;
-    
     @FXML
     private Label lblStatus;
-    
     @FXML
     private TableView tblList;
-    
     @FXML
     private TableColumn colSelected;
-            
     private static Logger logger = Logger.getLogger(Main.class);
+    private List<ComponentInfo> list = FXCollections.observableList(new ArrayList<ComponentInfo>(0));
 
     public void load() {
         Platform.runLater(new Runnable() {
@@ -65,7 +64,7 @@ public class Main implements Initializable {
                 ac.setCommand("list-components");
                 try {
                     ac = client.execute(host, ac);
-                    List<ComponentInfo> list = ac.getComponents();
+                    list = ac.getComponents();
                     tblList.getItems().clear();
                     tblList.getItems().addAll(list);
                     lblStatus.setText("Done");
@@ -75,39 +74,32 @@ public class Main implements Initializable {
             }
         });
     }
-    
+
     private void createOutput() {
-        
+        int selected = 0;
+        for (ComponentInfo componentInfo : list) {
+            if (componentInfo.isSelected()) {
+                selected++;
+                
+            }
+        }
+        lblStatus.setText(selected + "selected items");
+
     }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-           Callback<TableColumn, TableCell> selectecCellFactory = new Callback<TableColumn, TableCell>() {
-
-            @Override
-            public TableCell call(final TableColumn param) {
-                final CheckBox checkBox = new CheckBox();
-                final CheckBoxTableCell cell = new CheckBoxTableCell() {
+        Callback<TableColumn<TableView, Boolean>, TableCell<TableView, Boolean>> booleanCellFactory =
+                new Callback<TableColumn<TableView, Boolean>, TableCell<TableView, Boolean>>() {
 
                     @Override
-                    public void updateItem(Object item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null) {
-                            checkBox.setDisable(true);
-                            checkBox.setSelected(false);
-                        } else {
-                            checkBox.setDisable(false);
-                            checkBox.setSelected(item.toString().equals("Yes") ? true : false);
-                            commitEdit(checkBox.isSelected() ? "Yes" : "No");
-                        }
+                    public TableCell<TableView, Boolean> call(TableColumn<TableView, Boolean> p) {
+                        return new CheckBoxCell();
                     }
                 };
-                cell.setGraphic(checkBox);
-                return cell;
-            }
-        };
- 
-        colSelected.setCellFactory(selectecCellFactory);
+        colSelected.setCellValueFactory(new PropertyValueFactory<TableView, Boolean>("selected"));
+        colSelected.setCellFactory(booleanCellFactory);
+
+
     }
 }
