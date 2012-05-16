@@ -49,7 +49,6 @@ public class Server extends Observable implements Runnable {
             if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
                 logger.error("Listening to " + listenAddress
                         + "...ignoring client address: " + client.getHostAddress());
-                connection.close();
                 return;
             }
 
@@ -83,8 +82,12 @@ public class Server extends Observable implements Runnable {
         } finally {
             //4: Closing connection
             try {
-                in.close();
-                out.close();
+                if (in != null) {
+                    in.close();
+                }
+                if (out != null) {
+                    out.close();
+                }
                 connection.close();
             } catch (IOException ioe) {
                 logger.error(ioe.getMessage());
@@ -95,7 +98,7 @@ public class Server extends Observable implements Runnable {
     public synchronized void terminate() {
         stopRequest = true;
     }
-    
+
     private String processMessage(DataOutputStream out, String data) {
         String result = data;
         if (data.indexOf("<") >= 0) {
@@ -141,5 +144,4 @@ public class Server extends Observable implements Runnable {
         }
         return result;
     }
-
 }
