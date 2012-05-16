@@ -16,56 +16,53 @@ import javafx.scene.control.TableView;
  * @author Carl J. Mosca
  */
 public class CheckBoxCell extends TableCell<TableView, Boolean> {
-        private CheckBox checkBox;
 
-        public CheckBoxCell() {
+    private CheckBox checkBox;
 
-            checkBox = new CheckBox();
-            checkBox.setDisable(false);
-            checkBox.selectedProperty().addListener(new ChangeListener<Boolean> () {
+    public CheckBoxCell() {
+
+        checkBox = new CheckBox();
+        checkBox.setDisable(false);
+        checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 
             @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if(isEditing())
-                        commitEdit(newValue == null ? false : newValue);
-                }
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
-            });
-            this.setGraphic(checkBox);
-            this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            this.setEditable(true);
-
-
-        }
-
-        @Override
-        public void startEdit() {
-            super.startEdit();
-            if (isEmpty()) {
-                return;
+                commitEdit(newValue == null ? false : newValue);
             }
-            checkBox.setDisable(false);
-            checkBox.requestFocus();
+        });
+        this.setGraphic(checkBox);
+        this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        this.setEditable(true);
+    }
 
+    @Override
+    public void startEdit() {
+        super.startEdit();
+        if (isEmpty()) {
+            return;
         }
+        checkBox.setDisable(false);
+        checkBox.requestFocus();
 
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-            checkBox.setDisable(true);
-        }
+    }
 
-        public void commitEdit(Boolean value) {
-            super.commitEdit(value);
-            checkBox.setDisable(true);
-        }
+    @Override
+    public void cancelEdit() {
+        super.cancelEdit();
+        //checkBox.setDisable(true);
+    }
 
+    public void commitEdit(Boolean value) {
+        super.commitEdit(value);
+        //checkBox.setDisable(true);
+    }
 
-        @Override
-        public void updateItem(Boolean item, boolean empty) {
-            super.updateItem(item, empty);
-            if (!isEmpty()) {
-                checkBox.setSelected(item);
-            }
+    @Override
+    public void updateItem(Boolean item, boolean empty) {
+        super.updateItem(item, empty);
+        if (!isEmpty()) {
+            checkBox.setSelected(item);
         }
     }
+}
