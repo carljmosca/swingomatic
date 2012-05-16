@@ -49,6 +49,8 @@ public class Server extends Observable implements Runnable {
             if (!listenAddress.equalsIgnoreCase(client.getHostAddress())) {
                 logger.error("Listening to " + listenAddress
                         + "...ignoring client address: " + client.getHostAddress());
+                connection.close();
+                return;
             }
 
             out = new DataOutputStream(connection.getOutputStream());
