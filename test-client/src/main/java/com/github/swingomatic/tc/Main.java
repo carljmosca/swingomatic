@@ -4,15 +4,13 @@
  */
 package com.github.swingomatic.tc;
 
-import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
 import com.github.swingomatic.tc.ui.CheckBoxCell;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -48,31 +46,39 @@ public class Main implements Initializable {
     @FXML
     private TableColumn colSelected;
     private static Logger logger = Logger.getLogger(Main.class);
-    private List<ComponentInfo> list = FXCollections.observableList(new ArrayList<ComponentInfo>(0));
+    private ObservableList<ComponentInfo> list = FXCollections.observableList(new ArrayList<ComponentInfo>(0));
 
     public void load() {
-        Platform.runLater(new Runnable() {
-
-            @Override
-            public void run() {
-                String host = "http://localhost:8088";
-                if (txtServerAddress.getText().length() > 0) {
-                    host = txtServerAddress.getText();
-                }
-                Client client = new Client();
-                ApplicationCommand ac = new ApplicationCommand();
-                ac.setCommand("list-components");
-                try {
-                    ac = client.execute(host, ac);
-                    list = ac.getComponents();
-                    tblList.getItems().clear();
-                    tblList.getItems().addAll(list);
-                    lblStatus.setText("Done");
-                } catch (Exception ex) {
-                    lblStatus.setText(ex.getMessage());
-                }
-            }
-        });
+        ComponentInfo componentInfo = new ComponentInfo();
+        componentInfo.setOfLabel("test");
+        componentInfo.setSelected(true);
+        list.add(componentInfo);
+        tblList.setItems(list);
+        for (ComponentInfo c : list) {
+            c.setSelected(!c.isSelected());
+        }
+        
+//        Platform.runLater(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                String host = "http://localhost:8088";
+//                if (txtServerAddress.getText().length() > 0) {
+//                    host = txtServerAddress.getText();
+//                }
+//                Client client = new Client();
+//                ApplicationCommand ac = new ApplicationCommand();
+//                ac.setCommand("list-components");
+//                try {
+//                    ac = client.execute(host, ac);
+//                    list.addAll(ac.getComponents());
+//                    tblList.setItems(list);
+//                    lblStatus.setText("Done");
+//                } catch (Exception ex) {
+//                    lblStatus.setText(ex.getMessage());
+//                }
+//            }
+//        });
     }
 
     private void createOutput() {
