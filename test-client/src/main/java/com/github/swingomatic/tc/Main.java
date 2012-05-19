@@ -7,6 +7,7 @@ package com.github.swingomatic.tc;
 import com.github.swingomatic.message.ApplicationCommand;
 import com.github.swingomatic.message.ComponentInfo;
 import com.github.swingomatic.tc.ui.CheckBoxCell;
+import com.github.swingomatic.tc.util.ClipboardUtility;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -77,15 +78,31 @@ public class Main implements Initializable {
 
     private void createOutput() {
         StringBuilder javaCode = new StringBuilder();
+        javaCode.append("List<ComponentInfo> list = new ArrayList<ComponentInfo>(0);\n");
+        javaCode.append("ComponentInfo componentInfo;\n");
         int selected = 0;
         for (ComponentInfo componentInfo : list) {
             if (componentInfo.isSelected()) {
                 selected++;
+                javaCode.append("componentInfo = new ComponentInfo();\n");
                 
+                javaCode.append("componentInfo.setOfLabel(\"").append(componentInfo.getCaption()).append("\");\n");
+                javaCode.append("componentInfo.setClazz(\"").append(componentInfo.getClazz()).append("\");\n");
+                javaCode.append("componentInfo.setCommand(\"").append(componentInfo.getCommand()).append("\");\n");
+                javaCode.append("componentInfo.setDelay(").append(componentInfo.getDelay()).append(");\n");
+                javaCode.append("componentInfo.setName(\"").append(componentInfo.getName()).append("\");\n");
+                javaCode.append("componentInfo.setOfLabel(\"").append(componentInfo.getOfLabel()).append("\");\n");
+                javaCode.append("componentInfo.setRetries(").append(componentInfo.getRetries()).append(");\n");
+                javaCode.append("componentInfo.setText(\"").append(componentInfo.getText()).append("\");\n");
+                javaCode.append("componentInfo.setToolTipText(\"").append(componentInfo.getToolTipText()).append("\");\n");
+                javaCode.append("componentInfo.setxCoordinate(").append(componentInfo.getxCoordinate()).append(");\n");
+                javaCode.append("componentInfo.setyCoordinate(").append(componentInfo.getyCoordinate()).append(");\n");
+
+                javaCode.append("list.add(componentInfo);\n");
             }
         }
         if (selected > 0) {
-            
+            ClipboardUtility.pasteToClipboard(javaCode.toString());
         }
         lblStatus.setText(selected + " selected items" + (selected > 0 ? " code is on clipboard" : ""));
 
