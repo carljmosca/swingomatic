@@ -25,6 +25,8 @@ public class ComponentInfo implements Serializable {
     private int delay;
     private int retries;
     private boolean selected;
+    private boolean requestFocus;
+
 //    public PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     
     public ComponentInfo() {
@@ -167,6 +169,14 @@ public class ComponentInfo implements Serializable {
         boolean oldSelected = this.selected;
         this.selected = selected;
 //        propertyChangeSupport.firePropertyChange("selected", oldSelected, selected);
+    }
+    
+    public boolean isRequestFocus() {
+        return requestFocus;
+    }
+
+    public void setRequestFocus(boolean requestFocus) {
+        this.requestFocus = requestFocus;
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {

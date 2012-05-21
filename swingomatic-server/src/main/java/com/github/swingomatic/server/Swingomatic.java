@@ -149,7 +149,6 @@ public class Swingomatic implements
 
     private void createGUI() {
         WindowListener l = new WindowAdapter() {
-
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
@@ -174,7 +173,6 @@ public class Swingomatic implements
 //            }
 //        });
         SwingEventMonitor.addFocusListener(new FocusListener() {
-
             public void focusGained(FocusEvent e) {
             }
 
@@ -182,7 +180,6 @@ public class Swingomatic implements
             }
         });
         SwingEventMonitor.addContainerListener(new ContainerListener() {
-
             public void componentAdded(ContainerEvent e) {
             }
 
@@ -275,18 +272,22 @@ public class Swingomatic implements
                     logger.debug("ofLabel and JLabel found");
                     JLabel jLabel = (JLabel) comp;
                     if ((jLabel.getLabelFor() != null) && (jLabel.getText().equals(componentInfo.getOfLabel()))) {
+                        if (componentInfo.isRequestFocus()) {
+                            jLabel.getLabelFor().requestFocus();
+                        }
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
                         logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
                         if (jLabel.getLabelFor() instanceof JTextField) {
                             ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
                             result = true;
                         } else if (jLabel.getLabelFor() instanceof JComboBox) {
-                            ((JComboBox)jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
+                            ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
                             return true;
                         } else if (jLabel.getLabelFor() instanceof JCheckBox) {
 //                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
                             return true;
-                    }
+                        }
+
                     }
                 }
                 if (comp instanceof JButton) {
@@ -331,7 +332,6 @@ public class Swingomatic implements
         t = new JTree(root);
 
         MouseListener ml = new MouseAdapter() {
-
             public void mousePressed(MouseEvent e) {
                 if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
                     TreePath selPath = t.getPathForLocation(e.getX(), e.getY());
