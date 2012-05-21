@@ -281,9 +281,12 @@ public class Swingomatic implements
                             ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
                             result = true;
                         } else if (jLabel.getLabelFor() instanceof JComboBox) {
-                            JComboBox j = new JComboBox();
                             ((JComboBox)jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
-                        }
+                            return true;
+                        } else if (jLabel.getLabelFor() instanceof JCheckBox) {
+//                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
+                            return true;
+                    }
                     }
                 }
                 if (comp instanceof JButton) {
