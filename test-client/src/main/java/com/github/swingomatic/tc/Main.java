@@ -52,7 +52,7 @@ public class Main implements Initializable {
     private ObservableList<ComponentInfo> list = FXCollections.observableList(new ArrayList<ComponentInfo>(0));
 
     public void load() {
-        
+
         Platform.runLater(new Runnable() {
 
             @Override
@@ -85,16 +85,29 @@ public class Main implements Initializable {
             if (componentInfo.isSelected()) {
                 selected++;
                 javaCode.append("componentInfo = new ComponentInfo();\n");
-                
-                javaCode.append("componentInfo.setOfLabel(\"").append(componentInfo.getCaption()).append("\");\n");
-                javaCode.append("componentInfo.setClazz(\"").append(componentInfo.getClazz()).append("\");\n");
-                javaCode.append("componentInfo.setCommand(\"").append(componentInfo.getCommand()).append("\");\n");
+                if (componentInfo.getCaption() != null) {
+                    javaCode.append("componentInfo.setOfLabel(\"").append(componentInfo.getCaption()).append("\");\n");
+                }
+                if (componentInfo.getCaption() != null) {
+                    javaCode.append("componentInfo.setClazz(\"").append(componentInfo.getClazz()).append("\");\n");
+                }
+                if (componentInfo.getCommand() != null) {
+                    javaCode.append("componentInfo.setCommand(\"").append(componentInfo.getCommand()).append("\");\n");
+                }
                 javaCode.append("componentInfo.setDelay(").append(componentInfo.getDelay()).append(");\n");
-                javaCode.append("componentInfo.setName(\"").append(componentInfo.getName()).append("\");\n");
-                javaCode.append("componentInfo.setOfLabel(\"").append(componentInfo.getOfLabel()).append("\");\n");
+                if (componentInfo.getName() != null) {
+                    javaCode.append("componentInfo.setName(\"").append(componentInfo.getName()).append("\");\n");
+                }
+                if (componentInfo.getOfLabel() != null) {
+                    javaCode.append("componentInfo.setOfLabel(\"").append(componentInfo.getOfLabel()).append("\");\n");
+                }
                 javaCode.append("componentInfo.setRetries(").append(componentInfo.getRetries()).append(");\n");
-                javaCode.append("componentInfo.setText(\"").append(componentInfo.getText()).append("\");\n");
-                javaCode.append("componentInfo.setToolTipText(\"").append(componentInfo.getToolTipText()).append("\");\n");
+                if (componentInfo.getText() != null) {
+                    javaCode.append("componentInfo.setText(\"").append(componentInfo.getText()).append("\");\n");
+                }
+                if (componentInfo.getToolTipText() != null) {
+                    javaCode.append("componentInfo.setToolTipText(\"").append(componentInfo.getToolTipText()).append("\");\n");
+                }
                 javaCode.append("componentInfo.setxCoordinate(").append(componentInfo.getxCoordinate()).append(");\n");
                 javaCode.append("componentInfo.setyCoordinate(").append(componentInfo.getyCoordinate()).append(");\n");
 
