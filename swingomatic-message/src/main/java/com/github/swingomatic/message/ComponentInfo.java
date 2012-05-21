@@ -6,12 +6,13 @@ package com.github.swingomatic.message;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 
 /**
  *
  * @author Carl J. Mosca
  */
-public class ComponentInfo {
+public class ComponentInfo implements Serializable {
     private String name;
     private String clazz;
     private String ofLabel;
@@ -24,13 +25,13 @@ public class ComponentInfo {
     private int delay;
     private int retries;
     private boolean selected;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+//    public PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     
     public ComponentInfo() {
     }
     
     public ComponentInfo readResolve() {
-        propertyChangeSupport = new PropertyChangeSupport(this);      
+//        propertyChangeSupport = new PropertyChangeSupport(this);      
         return this;
     }
 
@@ -55,7 +56,7 @@ public class ComponentInfo {
     public void setName(String name) {
         String oldName = this.name;
         this.name = name;
-        propertyChangeSupport.firePropertyChange("name", oldName, name);
+//        propertyChangeSupport.firePropertyChange("name", oldName, name);
     }
 
     public String getClazz() {
@@ -65,7 +66,7 @@ public class ComponentInfo {
     public void setClazz(String clazz) {
         String oldClazz = this.clazz;
         this.clazz = clazz;
-        propertyChangeSupport.firePropertyChange("clazz", oldClazz, clazz);
+//        propertyChangeSupport.firePropertyChange("clazz", oldClazz, clazz);
     }
 
     public String getOfLabel() {
@@ -75,7 +76,7 @@ public class ComponentInfo {
     public void setOfLabel(String ofLabel) {
         String oldOfLabel = this.ofLabel;
         this.ofLabel = ofLabel;
-        propertyChangeSupport.firePropertyChange("ofLabel", oldOfLabel, ofLabel);
+//        propertyChangeSupport.firePropertyChange("ofLabel", oldOfLabel, ofLabel);
     }
 
     public String getText() {
@@ -85,7 +86,7 @@ public class ComponentInfo {
     public void setText(String text) {
         String oldText = this.text;
         this.text = text;
-        propertyChangeSupport.firePropertyChange("text", oldText, text);
+//        propertyChangeSupport.firePropertyChange("text", oldText, text);
     }
 
     public String getCommand() {
@@ -95,7 +96,7 @@ public class ComponentInfo {
     public void setCommand(String command) {
         String oldCommand = this.command;
         this.command = command;
-        propertyChangeSupport.firePropertyChange("command", oldCommand, command);
+//        propertyChangeSupport.firePropertyChange("command", oldCommand, command);
     }
 
     public String getToolTipText() {
@@ -105,7 +106,7 @@ public class ComponentInfo {
     public void setToolTipText(String toolTipText) {
         String oldToolTipText = this.toolTipText;
         this.toolTipText = toolTipText;
-        propertyChangeSupport.firePropertyChange("toolTipText", oldToolTipText, toolTipText);
+//        propertyChangeSupport.firePropertyChange("toolTipText", oldToolTipText, toolTipText);
     }
 
     public int getDelay() {
@@ -115,7 +116,7 @@ public class ComponentInfo {
     public void setDelay(int delay) {
         int oldDelay = this.delay;
         this.delay = delay;
-        propertyChangeSupport.firePropertyChange("delay", oldDelay, delay);
+//        propertyChangeSupport.firePropertyChange("delay", oldDelay, delay);
     }
 
     public int getRetries() {
@@ -125,7 +126,7 @@ public class ComponentInfo {
     public void setRetries(int retries) {
         int oldRetries = this.retries;
         this.retries = retries;
-        propertyChangeSupport.firePropertyChange("retries", oldRetries, retries);
+//        propertyChangeSupport.firePropertyChange("retries", oldRetries, retries);
     }
 
     public int getxCoordinate() {
@@ -135,7 +136,7 @@ public class ComponentInfo {
     public void setxCoordinate(int xCoordinate) {
         int oldXCoordinate = this.xCoordinate;
         this.xCoordinate = xCoordinate;
-        propertyChangeSupport.firePropertyChange("xCoordinate", oldXCoordinate, xCoordinate);
+//        propertyChangeSupport.firePropertyChange("xCoordinate", oldXCoordinate, xCoordinate);
     }
 
     public int getyCoordinate() {
@@ -145,7 +146,7 @@ public class ComponentInfo {
     public void setyCoordinate(int yCoordinate) {
         int oldYCoordinate = this.yCoordinate;
         this.yCoordinate = yCoordinate;
-        propertyChangeSupport.firePropertyChange("yCoordinate", oldYCoordinate, yCoordinate);
+//        propertyChangeSupport.firePropertyChange("yCoordinate", oldYCoordinate, yCoordinate);
     }
 
     public String getCaption() {
@@ -155,7 +156,7 @@ public class ComponentInfo {
     public void setCaption(String caption) {
         String oldCaption = this.caption;
         this.caption = caption;
-        propertyChangeSupport.firePropertyChange("caption", oldCaption, caption);
+//        propertyChangeSupport.firePropertyChange("caption", oldCaption, caption);
     }
 
     public boolean isSelected() {
@@ -165,15 +166,15 @@ public class ComponentInfo {
     public void setSelected(boolean selected) {
         boolean oldSelected = this.selected;
         this.selected = selected;
-        propertyChangeSupport.firePropertyChange("selected", oldSelected, selected);
+//        propertyChangeSupport.firePropertyChange("selected", oldSelected, selected);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+//        propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
+//        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     public String toString() {
