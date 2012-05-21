@@ -24,18 +24,24 @@ public class ComponentInfo {
     private int delay;
     private int retries;
     private boolean selected;
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     
     public ComponentInfo() {
-        
+    }
+    
+    public ComponentInfo readResolve() {
+        propertyChangeSupport = new PropertyChangeSupport(this);      
+        return this;
     }
 
     public ComponentInfo(String name, String clazz) {
+
         this.name = name;
         this.clazz = clazz;
     }
 
     public ComponentInfo(String name, String clazz, String ofLabel, String text) {
+
         this.name = name;
         this.clazz = clazz;
         this.ofLabel = ofLabel;
