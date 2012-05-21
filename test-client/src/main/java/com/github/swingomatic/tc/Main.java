@@ -110,6 +110,7 @@ public class Main implements Initializable {
                 }
                 javaCode.append("componentInfo.setxCoordinate(").append(componentInfo.getxCoordinate()).append(");\n");
                 javaCode.append("componentInfo.setyCoordinate(").append(componentInfo.getyCoordinate()).append(");\n");
+                javaCode.append("componentInfo.setRequestFocus(false);\n");
 
                 javaCode.append("list.add(componentInfo);\n");
             }
