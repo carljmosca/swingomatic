@@ -62,7 +62,7 @@ public class Swingomatic implements
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
-
+        
         for (int i = 0; i < SERVER_COUNT; i++) {
             servers.add(new ServerObserver(this, serverSocket, listenAddress));
         }
@@ -119,7 +119,7 @@ public class Swingomatic implements
                 logger.debug(ex.getMessage());
             }
         }
-        for (int i = 0; i < wins.length; i++) {
+        for (int i = 0; i < wins.length; i++) {            
             ok = processComponentNodes(wins[i], root, componentInfo);
             if (ok) {
                 break;
@@ -314,7 +314,16 @@ public class Swingomatic implements
                         jButton.doClick();
                         result = true;
                     }
-                }               
+                }
+                             
+                if (comp instanceof JMenuItem) {
+                    JMenuItem jMenuItem = (JMenuItem) comp;
+                    if (jMenuItem.getText() != null 
+                            && jMenuItem.getText().equals(componentInfo.getText())) {
+                        jMenuItem.doClick();
+                    }
+                }
+                
                 if (!result) {
                     result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
                 }
@@ -417,5 +426,5 @@ public class Swingomatic implements
         Window fWindow = getContainingWindow(comp);
         fWindow.requestFocus();
     }
-   
+       
 }
