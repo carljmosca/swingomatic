@@ -125,7 +125,7 @@ public class Swingomatic implements
                 break;
             }
         }
-        logger.debug("end processCompent - result: " + ok);
+        logger.debug("end processComponent - result: " + ok);
         return ok;
     }
 
@@ -261,13 +261,22 @@ public class Swingomatic implements
         boolean result = false;
         ComponentObject me;
         logger.debug("processing " + componentInfo.toString());
-        me = new ComponentObject(c);
+        me = new ComponentObject(c);       
         root.add(me);
         if (c instanceof Container) {
             int count = ((Container) c).getComponentCount();
             for (int i = 0; i < count && !result; i++) {
-                Component comp = ((Container) c).getComponent(i);
-                logger.debug("processCompoentNodes: " + comp.getClass().toString());
+                Component comp = ((Container) c).getComponent(i);   
+                logger.debug("processComponentNodes: " + comp.getClass().toString());
+                
+                /*
+                 * Despite what the JavaDoc seems to state, requesting focus on
+                 * a lower-level component does not necessarily force focus to
+                 * it's containing window.  Therefore we're explicitly requesting
+                 * focus for the window.
+                 */
+                requestFocusForWindow(comp);
+
                 if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
                     logger.debug("ofLabel and JLabel found");
                     JLabel jLabel = (JLabel) comp;
@@ -276,12 +285,12 @@ public class Swingomatic implements
                             jLabel.getLabelFor().requestFocus();
                         }
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
-                        logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
+                        logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());                        
                         if (jLabel.getLabelFor() instanceof JTextField) {
-                            ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
+                            ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());                          
                             result = true;
                         } else if (jLabel.getLabelFor() instanceof JComboBox) {
-                            ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
+                            ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());                           
                             return true;
                         } else if (jLabel.getLabelFor() instanceof JCheckBox) {
 //                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
@@ -305,7 +314,7 @@ public class Swingomatic implements
                         jButton.doClick();
                         result = true;
                     }
-                }
+                }               
                 if (!result) {
                     result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
                 }
@@ -387,4 +396,26 @@ public class Swingomatic implements
     public void changedUpdate(DocumentEvent e) {
         //logger.debug("DocumentEvent changedUpdate" + e.toString());
     }
+   
+    private Window getContainingWindow(Component comp) {
+        Component tmpComponent = comp;
+        Window containingWindow = null;
+        
+        while (true) {
+            Component parent = tmpComponent.getParent();
+            if (parent == null) break;
+            if (parent instanceof java.awt.Window) {
+                containingWindow = (Window)parent;
+                break;
+            }
+            tmpComponent = parent;
+        }
+        return containingWindow;
+    }
+    
+    private void requestFocusForWindow(Component comp) {        
+        Window fWindow = getContainingWindow(comp);
+        fWindow.requestFocus();
+    }
+   
 }
