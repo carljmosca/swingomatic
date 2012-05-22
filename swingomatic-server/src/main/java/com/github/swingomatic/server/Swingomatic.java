@@ -321,6 +321,7 @@ public class Swingomatic implements
                     if (jMenuItem.getText() != null 
                             && jMenuItem.getText().equals(componentInfo.getText())) {
                         jMenuItem.doClick();
+                        result = true;
                     }
                 }
                 
