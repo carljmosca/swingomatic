@@ -205,10 +205,13 @@ public class Swingomatic implements
         me = new ComponentObject(c);
         root.add(me);
         if (c instanceof Container) {
+            ComponentInfo componentInfo = new ComponentInfo();
+            setComponentInfoProperties(c, componentInfo);
+            result.add(componentInfo);
             int count = ((Container) c).getComponentCount();
             for (int i = 0; i < count; i++) {
                 Component comp = ((Container) c).getComponent(i);
-                ComponentInfo componentInfo = new ComponentInfo();
+                componentInfo = new ComponentInfo();
                 setComponentInfoProperties(comp, componentInfo);
                 result.add(componentInfo);
                 if (comp instanceof JLabel) {
@@ -226,7 +229,7 @@ public class Swingomatic implements
         }
         return result;
     }
-
+    
     private void setComponentInfoProperties(Component component,
             ComponentInfo componentInfo) {
         setComponentInfoProperties(component, componentInfo, null);
@@ -241,6 +244,7 @@ public class Swingomatic implements
         componentInfo.setToolTipText(getComponentPropertyValue(component, "getToolTipText"));
         componentInfo.setText(getComponentPropertyValue(component, "getText"));
         componentInfo.setCaption(getComponentPropertyValue(component, "getCaption"));
+        componentInfo.setTitle(getComponentPropertyValue(component, "getTitle"));
         if (ofLabel != null) {
             componentInfo.setOfLabel(ofLabel);
         }
@@ -304,7 +308,7 @@ public class Swingomatic implements
                     if (jButton.getToolTipText() != null
                             && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
                         jButton.doClick();
-                        result = true;
+                        return true;
                     }
                 }
                 if (comp instanceof JToggleButton) {
@@ -312,7 +316,7 @@ public class Swingomatic implements
                     if (jButton.getToolTipText() != null
                             && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
                         jButton.doClick();
-                        result = true;
+                        return true;
                     }
                 }
                              
@@ -321,7 +325,7 @@ public class Swingomatic implements
                     if (jMenuItem.getText() != null 
                             && jMenuItem.getText().equals(componentInfo.getText())) {
                         jMenuItem.doClick();
-                        result = true;
+                        return true;
                     }
                 }
                 
