@@ -62,7 +62,7 @@ public class Swingomatic implements
         } catch (IOException ex) {
             logger.error(ex.getMessage());
         }
-        
+
         for (int i = 0; i < SERVER_COUNT; i++) {
             servers.add(new ServerObserver(this, serverSocket, listenAddress));
         }
@@ -111,15 +111,8 @@ public class Swingomatic implements
         boolean ok = false;
         Window[] wins = EventQueueMonitor.getTopLevelWindows();
         ComponentObject root = new ComponentObject("Component Tree");
-        //TODO: delay/retries
-        if (componentInfo.getDelay() > 0) {
-            try {
-                Thread.sleep(componentInfo.getDelay());
-            } catch (InterruptedException ex) {
-                logger.debug(ex.getMessage());
-            }
-        }
-        for (int i = 0; i < wins.length; i++) {            
+
+        for (int i = 0; i < wins.length; i++) {
             ok = processComponentNodes(wins[i], root, componentInfo);
             if (ok) {
                 break;
@@ -229,7 +222,7 @@ public class Swingomatic implements
         }
         return result;
     }
-    
+
     private void setComponentInfoProperties(Component component,
             ComponentInfo componentInfo) {
         setComponentInfoProperties(component, componentInfo, null);
@@ -265,14 +258,20 @@ public class Swingomatic implements
         boolean result = false;
         ComponentObject me;
         logger.debug("processing " + componentInfo.toString());
-        me = new ComponentObject(c);       
+        me = new ComponentObject(c);
         root.add(me);
         if (c instanceof Container) {
             int count = ((Container) c).getComponentCount();
             for (int i = 0; i < count && !result; i++) {
-                Component comp = ((Container) c).getComponent(i);   
+                Component comp = ((Container) c).getComponent(i);
                 logger.debug("processComponentNodes: " + comp.getClass().toString());
-                
+                if (componentInfo.getDelay() > 0) {
+                    try {
+                        Thread.sleep(componentInfo.getDelay());
+                    } catch (InterruptedException ex) {
+                        logger.debug(ex.getMessage());
+                    }
+                }
                 /*
                  * Despite what the JavaDoc seems to state, requesting focus on
                  * a lower-level component does not necessarily force focus to
@@ -289,12 +288,12 @@ public class Swingomatic implements
                             jLabel.getLabelFor().requestFocus();
                         }
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
-                        logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());                        
+                        logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
                         if (jLabel.getLabelFor() instanceof JTextField) {
-                            ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());                          
+                            ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
                             result = true;
                         } else if (jLabel.getLabelFor() instanceof JComboBox) {
-                            ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());                           
+                            ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
                             return true;
                         } else if (jLabel.getLabelFor() instanceof JCheckBox) {
 //                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
@@ -319,16 +318,16 @@ public class Swingomatic implements
                         return true;
                     }
                 }
-                             
+
                 if (comp instanceof JMenuItem) {
                     JMenuItem jMenuItem = (JMenuItem) comp;
-                    if (jMenuItem.getText() != null 
+                    if (jMenuItem.getText() != null
                             && jMenuItem.getText().equals(componentInfo.getText())) {
                         jMenuItem.doClick();
                         return true;
                     }
                 }
-                
+
                 if (!result) {
                     result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
                 }
@@ -410,26 +409,27 @@ public class Swingomatic implements
     public void changedUpdate(DocumentEvent e) {
         //logger.debug("DocumentEvent changedUpdate" + e.toString());
     }
-   
+
     private Window getContainingWindow(Component comp) {
         Component tmpComponent = comp;
         Window containingWindow = null;
-        
+
         while (true) {
             Component parent = tmpComponent.getParent();
-            if (parent == null) break;
+            if (parent == null) {
+                break;
+            }
             if (parent instanceof java.awt.Window) {
-                containingWindow = (Window)parent;
+                containingWindow = (Window) parent;
                 break;
             }
             tmpComponent = parent;
         }
         return containingWindow;
     }
-    
-    private void requestFocusForWindow(Component comp) {        
+
+    private void requestFocusForWindow(Component comp) {
         Window fWindow = getContainingWindow(comp);
         fWindow.requestFocus();
     }
-       
 }
