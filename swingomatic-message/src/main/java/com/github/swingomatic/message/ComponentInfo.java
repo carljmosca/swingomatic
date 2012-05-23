@@ -4,8 +4,6 @@
  */
 package com.github.swingomatic.message;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 
 /**
@@ -26,8 +24,8 @@ public class ComponentInfo implements Serializable {
     private int retries;
     private boolean selected;
     private boolean requestFocus;
+    private String title;
 
-//    public PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     
     public ComponentInfo() {
     }
@@ -178,14 +176,14 @@ public class ComponentInfo implements Serializable {
     public void setRequestFocus(boolean requestFocus) {
         this.requestFocus = requestFocus;
     }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-//        propertyChangeSupport.addPropertyChangeListener(listener);
+    public String getTitle() {
+        return title;
     }
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-//        propertyChangeSupport.removePropertyChangeListener(listener);
+    public void setTitle(String title) {
+        this.title = title;
     }
+    
 
     public String toString() {
         return "name: " + name + " clazz: " + clazz + " ofLabel: " + ofLabel
