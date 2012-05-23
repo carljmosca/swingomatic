@@ -8,55 +8,57 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.paint.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="615.0" prefWidth="834.0" styleClass="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.swingomatic.tc.Main">
-    <children>
-        <Button id="button1" fx:id="btnList" onAction="#btnListAction" prefWidth="62.0" text="List" AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="14.0" />
-        <TableView id="tableView1" fx:id="tblList" prefHeight="529.0" prefWidth="806.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="50.0">
-            <columns>
-                <TableColumn prefWidth="75.0" text="Name" fx:id="colName">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="name" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="75.0" text="Class" fx:id="colClass">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="clazz" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="120.0" text="Text" fx:id="colText">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="text" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="75.0" text="Of Label" fx:id="colOfLabel">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="ofLabel" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="120.0" text="Tool Tip" fx:id="colToolTipText">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="toolTipText" />
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="75.0" text="Caption" fx:id="colCaption">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="caption" />                      
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn prefWidth="75.0" text="X/Y" fx:id="colXY" />
-                <TableColumn prefWidth="75.0" text="Selected" fx:id="colSelected">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="selected" />
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-        </TableView>
-        <TextField id="textField1" fx:id="txtServerAddress" prefWidth="545.0" text="http://localhost:8088" AnchorPane.leftAnchor="116.0" AnchorPane.rightAnchor="173.0" AnchorPane.topAnchor="14.0" />
-        <Label id="label1" fx:id="lblServerAddress" layoutX="14.0" layoutY="17.0" prefWidth="102.0" text="Server Address:" />
-        <Button id="button1" fx:id="btnGenerate" onAction="#btnGenerateAction" prefWidth="75.0" text="Generate" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
-        <Label id="label2" fx:id="lblStatus" prefWidth="803.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="17.0" />
-    </children>
-    <stylesheets>
-        <URL value="@swingomatic.css" />
-    </stylesheets>
+<AnchorPane id="AnchorPane" prefHeight="615.0" prefWidth="994.0" styleClass="root" xmlns:fx="http://javafx.com/fxml" fx:controller="com.github.swingomatic.tc.Main">
+  <children>
+    <Button id="button1" fx:id="btnList" onAction="#btnListAction" prefWidth="62.0" text="List" AnchorPane.rightAnchor="102.0" AnchorPane.topAnchor="14.0" />
+    <TableView id="tableView1" fx:id="tblList" prefHeight="529.0" prefWidth="806.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="50.0">
+      <columns>
+        <TableColumn prefWidth="75.0" text="Name" fx:id="colName">
+          <cellValueFactory>
+            <PropertyValueFactory property="name" />
+          </cellValueFactory>
+        </TableColumn>
+        <TableColumn prefWidth="75.0" text="Class" fx:id="colClass">
+          <cellValueFactory>
+            <PropertyValueFactory property="clazz" />
+          </cellValueFactory>
+        </TableColumn>
+        <TableColumn prefWidth="120.0" text="Text" fx:id="colText">
+          <cellValueFactory>
+            <PropertyValueFactory property="text" />
+          </cellValueFactory>
+        </TableColumn>
+        <TableColumn prefWidth="75.0" text="Of Label" fx:id="colOfLabel">
+          <cellValueFactory>
+            <PropertyValueFactory property="ofLabel" />
+          </cellValueFactory>
+        </TableColumn>
+        <TableColumn prefWidth="120.0" text="Tool Tip" fx:id="colToolTipText">
+          <cellValueFactory>
+            <PropertyValueFactory property="toolTipText" />
+          </cellValueFactory>
+        </TableColumn>
+        <TableColumn prefWidth="75.0" text="Caption" fx:id="colCaption">
+          <cellValueFactory>
+            <PropertyValueFactory property="caption" />
+          </cellValueFactory>
+        </TableColumn>
+        <TableColumn prefWidth="75.0" text="X" fx:id="colX" />
+        <TableColumn prefWidth="75.0" text="Y" fx:id="colY" />
+        <TableColumn prefWidth="75.0" text="Title" />
+        <TableColumn prefWidth="75.0" text="Selected" fx:id="colSelected">
+          <cellValueFactory>
+            <PropertyValueFactory property="selected" />
+          </cellValueFactory>
+        </TableColumn>
+      </columns>
+    </TableView>
+    <TextField id="textField1" fx:id="txtServerAddress" prefWidth="545.0" text="http://localhost:8088" AnchorPane.leftAnchor="116.0" AnchorPane.rightAnchor="173.0" AnchorPane.topAnchor="14.0" />
+    <Label id="label1" fx:id="lblServerAddress" layoutX="14.0" layoutY="17.0" prefWidth="102.0" text="Server Address:" />
+    <Button id="button1" fx:id="btnGenerate" onAction="#btnGenerateAction" prefWidth="75.0" text="Generate" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+    <Label id="label2" fx:id="lblStatus" prefWidth="803.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="17.0" />
+  </children>
+  <stylesheets>
+    <URL value="@swingomatic.css" />
+  </stylesheets>
 </AnchorPane>
