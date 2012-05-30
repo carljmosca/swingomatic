@@ -367,7 +367,7 @@ public class Swingomatic implements
             }
         };
 
-        t.addMouseListener(ml);
+        //t.addMouseListener(ml);
         return t;
     }
 
