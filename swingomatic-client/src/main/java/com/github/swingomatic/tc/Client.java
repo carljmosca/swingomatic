@@ -17,25 +17,31 @@ import javafx.collections.ObservableList;
  * @author moscac
  */
 public class Client {
-
+    
     public ApplicationCommand execute(String serverURL,
             ApplicationCommand applicationCommand) throws Exception {
         
         XStream xstream = new XStream();
         String message = xstream.toXML(applicationCommand);
         String response = HttpClientWrapper.doCall(serverURL, "/", message);
-        int p = response.indexOf("?>");
-        if (p >= 0) {
-            response = response.substring(p + 2);
+        ApplicationCommand result = new ApplicationCommand();
+        if (response == null || response.trim().length() == 0) {
+            result.setResult("no response");
+        } else {
+            int p = response.indexOf("?>");
+            if (p >= 0) {
+                response = response.substring(p + 2);
+            }
+            result = (ApplicationCommand) xstream.fromXML(response);
         }
-        return (ApplicationCommand) xstream.fromXML(response);
+        return result;
     }
     
     public ObservableList<ComponentInfo> getComponentInfoList(ApplicationCommand applicationCommand) {
         ObservableList<ComponentInfo> list = FXCollections.observableList(new ArrayList<ComponentInfo>(0));
         for (Object object : applicationCommand.getComponents()) {
             if (object instanceof ComponentInfo) {
-                list.add((ComponentInfo)object);
+                list.add((ComponentInfo) object);
             }
         }
         return list;
