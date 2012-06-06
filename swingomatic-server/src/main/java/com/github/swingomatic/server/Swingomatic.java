@@ -17,6 +17,7 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 public class Swingomatic implements
-        ActionListener, KeyListener, GUIInitializedListener, DocumentListener {
+        GUIInitializedListener {
 
     private JTree accessibleTree;
     private static int depth = 0;
@@ -39,12 +40,15 @@ public class Swingomatic implements
     private static int SERVER_COUNT = 2;
     private ServerSocket serverSocket;
     private List servers = new ArrayList(0);
+    private WindowListener windowListener;
+    public boolean componentsWereAdded = false;
 
     public static void main(String s[]) {
         Swingomatic app = new Swingomatic();
     }
 
     public Swingomatic() {
+        logger.debug("Swingomatic constructor");
         initializeLogDirectory();
         initialize();
         logger.debug("Swingomatic server....");
@@ -52,7 +56,7 @@ public class Swingomatic implements
 
     private void initialize() {
         EventQueueMonitor.addGUIInitializedListener(this);
-        createGUI();
+        //createGUI();
         int listenPort = PropertyManager.getInstance().getServerPort();
         String listenAddress = PropertyManager.getInstance().getClientAddress();
         logger.debug("Trying to bind to localhost on port " + Integer.toString(listenPort) + "...");
@@ -85,14 +89,35 @@ public class Swingomatic implements
                 + "execute<XML>";
         return result;
     }
+    
+    class ExecuteTask implements Runnable {
+        
+        private ApplicationCommand applicationCommand;
+        public boolean result = false;
 
+        public ExecuteTask(ApplicationCommand applicationCommand) {
+            this.applicationCommand = applicationCommand;
+        }        
+        public void run() {
+            result = executeCommand(applicationCommand);
+        }        
+    }
+    
     public boolean executeCommand(ApplicationCommand ac) {
-        boolean ok = ac.getComponents() != null;
-        int i = 0;
+        componentsWereAdded = false;
+        boolean ok = (ac.getComponents() != null) && (ac.getLastProcessedComponent() < ac.getComponents().size());
+        int i = ac.getLastProcessedComponent();
         while (ok && (i < ac.getComponents().size())) {
             logger.debug("processing component " + i);
             if (ac.getComponents().get(i) instanceof ComponentInfo) {
                 ComponentInfo ci = (ComponentInfo) ac.getComponents().get(i);
+                if (ci.getDelay() > 0) {
+                    try {
+                        Thread.sleep(ci.getDelay());
+                    } catch (InterruptedException ex) {
+                        logger.debug(ex.getMessage());
+                    }
+                }
                 ok = processComponent(ci);
                 if (!ok) {
                     ac.setResult("Not completed: " + i + " " + ci.getName());
@@ -101,11 +126,14 @@ public class Swingomatic implements
                 ac.setResult("Error: " + i);
                 ok = false;
             }
-            i++;
+            if (ok) {
+                i++;
+            }
+            ac.setLastProcessedComponent(i);
         }
         return ok;
     }
-
+    
     private boolean processComponent(ComponentInfo componentInfo) {
         logger.debug("processing component: " + componentInfo.toString());
         boolean ok = false;
@@ -137,11 +165,12 @@ public class Swingomatic implements
     }
 
     public void guiInitialized() {
+        logger.debug("guiInitialized");
         createGUI();
     }
 
     private void createGUI() {
-        WindowListener l = new WindowAdapter() {
+        windowListener = new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
@@ -150,9 +179,9 @@ public class Swingomatic implements
 
         accessibleTree = createAccessibleTree();
 
-        SwingEventMonitor.addKeyListener(this);
-        SwingEventMonitor.addDocumentListener(this);
-        SwingEventMonitor.addActionListener(this);
+        //SwingEventMonitor.addKeyListener(this);
+        //SwingEventMonitor.addDocumentListener(this);
+        //SwingEventMonitor.addActionListener(this);
 //        SwingEventMonitor.addPropertyChangeListener(new PropertyChangeListener() {
 //
 //            public void propertyChange(PropertyChangeEvent evt) {
@@ -165,20 +194,49 @@ public class Swingomatic implements
 //                logger.debug("StateChanged: " + e.getSource().toString());
 //            }
 //        });
-        SwingEventMonitor.addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-            }
-
-            public void focusLost(FocusEvent e) {
-            }
-        });
+//        SwingEventMonitor.addFocusListener(new FocusListener() {
+//            public void focusGained(FocusEvent e) {
+//            }
+//
+//            public void focusLost(FocusEvent e) {
+//            }
+//        });
         SwingEventMonitor.addContainerListener(new ContainerListener() {
             public void componentAdded(ContainerEvent e) {
+                componentsWereAdded = true;
+                logger.debug("component added: " + e.getChild().getName());
             }
 
             public void componentRemoved(ContainerEvent e) {
             }
         });
+//        SwingEventMonitor.addWindowListener(new WindowListener() {
+//
+//            public void windowOpened(WindowEvent e) {
+//                logger.debug("window opened");
+//                componentsWereAdded = true;
+//            }
+//
+//            public void windowClosing(WindowEvent e) {
+//            }
+//
+//            public void windowClosed(WindowEvent e) {
+//            }
+//
+//            public void windowIconified(WindowEvent e) {
+//            }
+//
+//            public void windowDeiconified(WindowEvent e) {
+//            }
+//
+//            public void windowActivated(WindowEvent e) {
+//                logger.debug("window activated");
+//                componentsWereAdded = true;
+//            }
+//
+//            public void windowDeactivated(WindowEvent e) {
+//            }
+//        });
     }
 
     public ApplicationCommand listComponents() {
@@ -265,25 +323,22 @@ public class Swingomatic implements
             for (int i = 0; i < count && !result; i++) {
                 Component comp = ((Container) c).getComponent(i);
                 logger.debug("processComponentNodes: " + comp.getClass().toString());
-                if (componentInfo.getDelay() > 0) {
-                    try {
-                        Thread.sleep(componentInfo.getDelay());
-                    } catch (InterruptedException ex) {
-                        logger.debug(ex.getMessage());
-                    }
-                }
+
                 /*
                  * Despite what the JavaDoc seems to state, requesting focus on
                  * a lower-level component does not necessarily force focus to
                  * it's containing window.  Therefore we're explicitly requesting
                  * focus for the window.
                  */
-                requestFocusForWindow(comp);
+                //requestFocusForWindow(comp);
 
                 if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
                     logger.debug("ofLabel and JLabel found");
                     JLabel jLabel = (JLabel) comp;
-                    if ((jLabel.getLabelFor() != null) && (jLabel.getText().equals(componentInfo.getOfLabel()))) {
+                    logger.debug("JLabel Text: " + jLabel.getText());
+                    if ((jLabel.getText() != null)
+                            && (jLabel.getLabelFor() != null)
+                            && (jLabel.getText().equals(componentInfo.getOfLabel()))) {
                         if (componentInfo.isRequestFocus()) {
                             jLabel.getLabelFor().requestFocus();
                         }
@@ -323,19 +378,38 @@ public class Swingomatic implements
                     JMenuItem jMenuItem = (JMenuItem) comp;
                     if (jMenuItem.getText() != null
                             && jMenuItem.getText().equals(componentInfo.getText())) {
-                        jMenuItem.doClick();
+                        doClick(jMenuItem);
+                        //jMenuItem.doClick();
                         return true;
                     }
                 }
-
+                
                 if (!result) {
-                    result = processComponentNodes(((Container) c).getComponent(i), me, componentInfo);
+                    //result = processComponentNodes( ((Container) c).getComponent(i), me, componentInfo);
+                    result = processComponentNodes(comp, me, componentInfo);
                 }
             }
         }
         // if we reach this point, we have not found the component and therefore
         // cannot process 
         return result;
+    }
+
+    private void doClick(JMenuItem jMenuItem) {
+        DoClickTask doClickTask = new DoClickTask(jMenuItem);
+        SwingUtilities.invokeLater(doClickTask);
+    }
+    
+    class DoClickTask implements Runnable {
+
+        private JMenuItem jMenuItem;
+        public DoClickTask(JMenuItem jMenuItem) {
+            this.jMenuItem = jMenuItem;
+        }
+        public void run() {
+            jMenuItem.doClick();
+        }
+        
     }
 
     private JTree createAccessibleTree() {
@@ -353,19 +427,19 @@ public class Swingomatic implements
 
         t = new JTree(root);
 
-        MouseListener ml = new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
-                    TreePath selPath = t.getPathForLocation(e.getX(), e.getY());
-                    if (selPath != null) {
-                        Object o = selPath.getLastPathComponent();
-                        if (o instanceof AccessibleObject) {
-                            Accessible a = ((AccessibleObject) o).getAccessible();
-                        }
-                    }
-                }
-            }
-        };
+//        MouseListener ml = new MouseAdapter() {
+//            public void mousePressed(MouseEvent e) {
+//                if (e.getModifiers() == InputEvent.BUTTON3_MASK) {
+//                    TreePath selPath = t.getPathForLocation(e.getX(), e.getY());
+//                    if (selPath != null) {
+//                        Object o = selPath.getLastPathComponent();
+//                        if (o instanceof AccessibleObject) {
+//                            Accessible a = ((AccessibleObject) o).getAccessible();
+//                        }
+//                    }
+//                }
+//            }
+//        };
 
         //t.addMouseListener(ml);
         return t;
@@ -399,7 +473,7 @@ public class Swingomatic implements
     }
 
     public void insertUpdate(DocumentEvent e) {
-        //logger.debug("DocumentEvent insertUpdate" + e.toString());
+        logger.debug("DocumentEvent insertUpdate" + e.toString());
     }
 
     public void removeUpdate(DocumentEvent e) {

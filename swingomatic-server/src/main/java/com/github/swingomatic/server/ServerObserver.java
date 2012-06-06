@@ -21,13 +21,13 @@ import org.apache.log4j.Logger;
  * @author Carl J. Mosca
  */
 public class ServerObserver implements Observer {
-    
+
     private static Logger logger = Logger.getLogger(ServerObserver.class);
     private Swingomatic swingomatic;
     private Server server;
     private ServerSocket serverSocket;
     private String listenAddress;
-    
+
     public ServerObserver(Swingomatic swingomatic, ServerSocket serverSocket,
             String listenAddress) {
         this.swingomatic = swingomatic;
@@ -35,13 +35,13 @@ public class ServerObserver implements Observer {
         this.listenAddress = listenAddress;
         createServer();
     }
-    
+
     private void createServer() {
         server = new Server(serverSocket, listenAddress);
         server.addObserver(this);
         new Thread(server).start();
     }
-    
+
     public void update(Observable o, Object arg) {
         SessionInfo sessionInfo = (SessionInfo) arg;
         if (sessionInfo.getOutput() != null) {
@@ -53,7 +53,22 @@ public class ServerObserver implements Observer {
             if ("list-components".equalsIgnoreCase(ac.getCommand())) {
                 ac = swingomatic.listComponents();
             } else if ("execute".equalsIgnoreCase(ac.getCommand())) {
-                swingomatic.executeCommand(ac);
+                ac.setLastProcessedComponent(0);
+                boolean ok = true;
+                while (ok || swingomatic.componentsWereAdded) {
+                    logger.debug("calling execute: " + ac.getLastProcessedComponent()
+                            + " " + swingomatic.componentsWereAdded);
+                    ok = swingomatic.executeCommand(ac);
+                    logger.debug("execute result: " + ac.getLastProcessedComponent()
+                            + " " + swingomatic.componentsWereAdded); 
+                    if (!ok) {
+                        try {
+                            Thread.sleep(3000);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
             }
             sessionInfo.setResponse(xstream.toXML(ac));
             sendResponseToClient(sessionInfo);
@@ -61,6 +76,7 @@ public class ServerObserver implements Observer {
             createServer();
         }
     }
+
     public void sendResponseToClient(SessionInfo sessionInfo) {
         try {
             logger.debug("sendResponseToClient:" + sessionInfo.getResponse());
