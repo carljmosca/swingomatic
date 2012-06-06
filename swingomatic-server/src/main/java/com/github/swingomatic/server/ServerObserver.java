@@ -59,11 +59,16 @@ public class ServerObserver implements Observer {
                     logger.debug("calling execute: " + ac.getLastProcessedComponent()
                             + " " + swingomatic.componentsWereAdded);
                     ok = swingomatic.executeCommand(ac);
-                    logger.debug("execute result: " + ac.getLastProcessedComponent()
-                            + " " + swingomatic.componentsWereAdded); 
-                    if (!ok) {
+                    logger.debug("execute result - lastProcessedComponent: " + ac.getLastProcessedComponent()
+                            + " componentsWereAdded: " + swingomatic.componentsWereAdded
+                            + " result: " + ok); 
+                    if (ok) {
+                        if (ac.getLastProcessedComponent() >= ac.getComponents().size())
+                            break;
+                    } else {
+                        logger.debug("did not complete: waiting...");
                         try {
-                            Thread.sleep(3000);
+                            Thread.sleep(1500);
                         } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }

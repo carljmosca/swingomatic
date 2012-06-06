@@ -89,20 +89,7 @@ public class Swingomatic implements
                 + "execute<XML>";
         return result;
     }
-    
-    class ExecuteTask implements Runnable {
-        
-        private ApplicationCommand applicationCommand;
-        public boolean result = false;
 
-        public ExecuteTask(ApplicationCommand applicationCommand) {
-            this.applicationCommand = applicationCommand;
-        }        
-        public void run() {
-            result = executeCommand(applicationCommand);
-        }        
-    }
-    
     public boolean executeCommand(ApplicationCommand ac) {
         componentsWereAdded = false;
         boolean ok = (ac.getComponents() != null) && (ac.getLastProcessedComponent() < ac.getComponents().size());
@@ -119,9 +106,8 @@ public class Swingomatic implements
                     }
                 }
                 ok = processComponent(ci);
-                if (!ok) {
-                    ac.setResult("Not completed: " + i + " " + ci.getName());
-                }
+                ac.setReturnCode(ok ? 0 : -1);
+                ac.setResult((ok ? "" : "Not ") + "completed: " + i + " " + ci.getName());
             } else {
                 ac.setResult("Error: " + i);
                 ok = false;
@@ -133,7 +119,7 @@ public class Swingomatic implements
         }
         return ok;
     }
-    
+
     private boolean processComponent(ComponentInfo componentInfo) {
         logger.debug("processing component: " + componentInfo.toString());
         boolean ok = false;
@@ -383,7 +369,7 @@ public class Swingomatic implements
                         return true;
                     }
                 }
-                
+
                 if (!result) {
                     //result = processComponentNodes( ((Container) c).getComponent(i), me, componentInfo);
                     result = processComponentNodes(comp, me, componentInfo);
@@ -399,17 +385,18 @@ public class Swingomatic implements
         DoClickTask doClickTask = new DoClickTask(jMenuItem);
         SwingUtilities.invokeLater(doClickTask);
     }
-    
+
     class DoClickTask implements Runnable {
 
         private JMenuItem jMenuItem;
+
         public DoClickTask(JMenuItem jMenuItem) {
             this.jMenuItem = jMenuItem;
         }
+
         public void run() {
             jMenuItem.doClick();
         }
-        
     }
 
     private JTree createAccessibleTree() {
