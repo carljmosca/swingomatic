@@ -16,6 +16,8 @@ public class ApplicationCommand {
     private String parameter;
     private String result;
     private List components;
+    private int returnCode;
+    private int lastProcessedComponent;
 
     public String getCommand() {
         return command;
@@ -48,5 +50,21 @@ public class ApplicationCommand {
     public void setResult(String result) {
         this.result = result;
     }
-    
+
+    public int getReturnCode() {
+        return returnCode;
+    }
+
+    public void setReturnCode(int returnCode) {
+        this.returnCode = returnCode;
+    }
+
+    public int getLastProcessedComponent() {
+        return lastProcessedComponent;
+    }
+
+    public void setLastProcessedComponent(int lastProcessedComponent) {
+        this.lastProcessedComponent = lastProcessedComponent;
+    }
+
 }
