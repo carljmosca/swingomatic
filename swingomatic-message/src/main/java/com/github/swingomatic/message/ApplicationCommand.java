@@ -18,6 +18,7 @@ public class ApplicationCommand {
     private List components;
     private int returnCode;
     private int lastProcessedComponent;
+    private int uiRefreshTimeout = 1000;
 
     public String getCommand() {
         return command;
@@ -65,6 +66,14 @@ public class ApplicationCommand {
 
     public void setLastProcessedComponent(int lastProcessedComponent) {
         this.lastProcessedComponent = lastProcessedComponent;
+    }
+
+    public int getUiRefreshTimeout() {
+        return uiRefreshTimeout;
+    }
+
+    public void setUiRefreshTimeout(int uiRefreshTimeout) {
+        this.uiRefreshTimeout = uiRefreshTimeout;
     }
 
 }
