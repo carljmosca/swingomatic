@@ -261,18 +261,15 @@ public class Swingomatic implements
                         result.add(componentInfo);
                     }
                 } else if (comp instanceof JTabbedPane) {
-                    JTabbedPane jtp = (JTabbedPane)comp;
-                    componentInfo.setName(jtp.getName());
+                    JTabbedPane jtp = (JTabbedPane) c;
+                     componentInfo.setName(jtp.getName());
+                    for (int j = 0; j < jtp.getComponentCount(); j++) {
+                        componentInfo = new ComponentInfo();
+                        setComponentInfoProperties(jtp.getComponentAt(j), componentInfo);
+                        result.add(componentInfo);
+                    }
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
-            }
-        } else if (c instanceof JTabbedPane) {
-            JTabbedPane jtp = (JTabbedPane) c;
-            ComponentInfo componentInfo;
-            for (int i = 0; i < jtp.getComponentCount(); i++) {
-                componentInfo = new ComponentInfo();
-                setComponentInfoProperties(jtp.getComponentAt(i), componentInfo);
-                result.add(componentInfo);
             }
         }
         return result;
