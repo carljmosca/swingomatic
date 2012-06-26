@@ -265,8 +265,11 @@ public class Swingomatic implements
             }
         } else if (c instanceof JTabbedPane) {
             JTabbedPane jtp = (JTabbedPane) c;
+            ComponentInfo componentInfo;
             for (int i = 0; i < jtp.getComponentCount(); i++) {
-                addComponentNodes(jtp.getComponentAt(i), me, result);
+                componentInfo = new ComponentInfo();
+                setComponentInfoProperties(jtp.getComponentAt(i), componentInfo);
+                result.add(componentInfo);
             }
         }
         return result;
