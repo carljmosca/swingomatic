@@ -22,6 +22,7 @@ public class ComponentInfo implements Serializable {
     private int yCoordinate;
     private int delay;
     private int retries;
+    private int iValue;
     private boolean selected;
     private boolean requestFocus;
     private String title;
@@ -183,7 +184,14 @@ public class ComponentInfo implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
+    public int getiValue() {
+        return iValue;
+    }
+
+    public void setiValue(int iValue) {
+        this.iValue = iValue;
+    }
 
     public String toString() {
         return "name: " + name + " clazz: " + clazz + " ofLabel: " + ofLabel
