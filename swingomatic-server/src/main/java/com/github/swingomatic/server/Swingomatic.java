@@ -339,8 +339,15 @@ public class Swingomatic implements
                         } else if (jLabel.getLabelFor() instanceof JCheckBox) {
 //                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
                             return true;
-                        }
+                        } 
 
+                    }
+                }
+                if (comp instanceof JTabbedPane) {
+                    JTabbedPane jtp = (JTabbedPane)comp;
+                    if (jtp.getToolTipText().equals(componentInfo.getToolTipText()) & componentInfo.getiValue() >= 0) {
+                        jtp.setSelectedIndex(componentInfo.getiValue());
+                        return true;
                     }
                 }
                 if (comp instanceof JButton) {
