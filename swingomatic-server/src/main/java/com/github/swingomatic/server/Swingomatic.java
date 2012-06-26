@@ -260,6 +260,9 @@ public class Swingomatic implements
                                 jLabel.getText());
                         result.add(componentInfo);
                     }
+                } else if (comp instanceof JTabbedPane) {
+                    JTabbedPane jtp = (JTabbedPane)comp;
+                    componentInfo.setName(jtp.getName());
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
             }
