@@ -263,6 +263,11 @@ public class Swingomatic implements
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
             }
+        } else if (c instanceof JTabbedPane) {
+            JTabbedPane jtp = (JTabbedPane) c;
+            for (int i = 0; i < jtp.getComponentCount(); i++) {
+                addComponentNodes(jtp.getComponentAt(i), me, result);
+            }
         }
         return result;
     }
@@ -339,12 +344,12 @@ public class Swingomatic implements
                         } else if (jLabel.getLabelFor() instanceof JCheckBox) {
 //                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
                             return true;
-                        } 
+                        }
 
                     }
                 }
                 if (comp instanceof JTabbedPane) {
-                    JTabbedPane jtp = (JTabbedPane)comp;
+                    JTabbedPane jtp = (JTabbedPane) comp;
                     if (jtp.getToolTipText().equals(componentInfo.getToolTipText()) & componentInfo.getiValue() >= 0) {
                         jtp.setSelectedIndex(componentInfo.getiValue());
                         return true;
