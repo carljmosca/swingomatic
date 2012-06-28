@@ -357,6 +357,19 @@ public class Swingomatic implements
 
                     }
                 }
+                
+                if (comp instanceof JTextField) {
+                    JTextField jtf = (JTextField)comp;
+                    if (jtf.getToolTipText().equals(componentInfo.getToolTipText()) &&
+                            jtf.getX() == componentInfo.getxCoordinate() &&
+                            jtf.getY() == componentInfo.getyCoordinate()) {
+                        if (componentInfo.isRequestFocus()) {
+                            jtf.requestFocus();
+                        }
+                        jtf.setText(componentInfo.getText());
+                    }
+                }
+                
                 if (comp instanceof JTabbedPane) {
                     JTabbedPane jtp = (JTabbedPane) comp;
                     for (int i2 = 0; i2 < jtp.getTabCount(); i2++) {
