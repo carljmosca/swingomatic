@@ -320,8 +320,8 @@ public class Swingomatic implements
         root.add(me);
         if (c instanceof Container) {
             int count = ((Container) c).getComponentCount();
-            for (int i = 0; i < count && !result; i++) {
-                Component comp = ((Container) c).getComponent(i);
+            for (int componentNumber = 0; componentNumber < count && !result; componentNumber++) {
+                Component comp = ((Container) c).getComponent(componentNumber);
                 logger.debug("processComponentNodes: " + comp.getClass().toString());
 
                 /*
@@ -367,15 +367,16 @@ public class Swingomatic implements
                             jtf.requestFocus();
                         }
                         jtf.setText(componentInfo.getText());
+                        return true;
                     }
                 }
                 
                 if (comp instanceof JTabbedPane) {
                     JTabbedPane jtp = (JTabbedPane) comp;
-                    for (int i2 = 0; i2 < jtp.getTabCount(); i2++) {
-                        if (jtp.getTitleAt(i2).equals(componentInfo.getTitle()) &&
-                                i2 == componentInfo.getiValue()) {
-                            jtp.setSelectedIndex(i2);
+                    for (int tabNumber = 0; tabNumber < jtp.getTabCount(); tabNumber++) {
+                        if (jtp.getTitleAt(tabNumber).equals(componentInfo.getTitle()) &&
+                                tabNumber == componentInfo.getiValue()) {
+                            jtp.setSelectedIndex(tabNumber);
                             return true;
                         } 
                     }
