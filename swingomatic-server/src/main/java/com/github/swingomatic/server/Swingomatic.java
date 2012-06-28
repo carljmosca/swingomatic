@@ -261,11 +261,17 @@ public class Swingomatic implements
                         result.add(componentInfo);
                     }
                 } else if (comp instanceof JTabbedPane) {
-                    JTabbedPane jtp = (JTabbedPane) c;
-                     componentInfo.setName(jtp.getName());
-                    for (int j = 0; j < jtp.getComponentCount(); j++) {
+                    logger.debug(comp);
+                    JTabbedPane jtp = (JTabbedPane) comp;
+                    logger.debug("tab count:" + jtp.getTabCount());
+                    logger.debug(jtp.getComponentAt(0));
+                    logger.debug(jtp.getTitleAt(0));
+                    
+                    for (int j = 0; j < jtp.getTabCount(); j++) {
                         componentInfo = new ComponentInfo();
-                        setComponentInfoProperties(jtp.getComponentAt(j), componentInfo);
+                        setComponentInfoProperties(jtp, componentInfo);
+                        componentInfo.setTitle(jtp.getTitleAt(j));
+                        componentInfo.setiValue(j);
                         result.add(componentInfo);
                     }
                 }
@@ -353,11 +359,15 @@ public class Swingomatic implements
                 }
                 if (comp instanceof JTabbedPane) {
                     JTabbedPane jtp = (JTabbedPane) comp;
-                    if (jtp.getToolTipText().equals(componentInfo.getToolTipText()) & componentInfo.getiValue() >= 0) {
-                        jtp.setSelectedIndex(componentInfo.getiValue());
-                        return true;
+                    for (int i2 = 0; i2 < jtp.getTabCount(); i2++) {
+                        if (jtp.getTitleAt(i2).equals(componentInfo.getTitle()) &&
+                                i2 == componentInfo.getiValue()) {
+                            jtp.setSelectedIndex(i2);
+                            return true;
+                        } 
                     }
                 }
+                
                 if (comp instanceof JButton) {
                     JButton jButton = (JButton) comp;
                     if (jButton.getToolTipText() != null
