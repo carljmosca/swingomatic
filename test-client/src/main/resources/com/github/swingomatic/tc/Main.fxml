@@ -45,7 +45,11 @@
         </TableColumn>
         <TableColumn prefWidth="75.0" text="X" fx:id="colX" />
         <TableColumn prefWidth="75.0" text="Y" fx:id="colY" />
-        <TableColumn prefWidth="75.0" text="Title" />
+        <TableColumn prefWidth="75.0" text="Title"> 
+            <cellValueFactory>
+                <PropertyValueFactory property="title"/>
+            </cellValueFactory>
+        </TableColumn>
         <TableColumn prefWidth="75.0" text="Selected" fx:id="colSelected">
           <cellValueFactory>
             <PropertyValueFactory property="selected" />

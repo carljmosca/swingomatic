@@ -105,12 +105,16 @@ public class Main implements Initializable {
                 if (componentInfo.getText() != null) {
                     javaCode.append("componentInfo.setText(\"").append(componentInfo.getText()).append("\");\n");
                 }
+                if (componentInfo.getTitle() != null) {
+                    javaCode.append("componentInfo.setTitle(\"").append(componentInfo.getTitle()).append("\");\n");
+                }
                 if (componentInfo.getToolTipText() != null) {
                     javaCode.append("componentInfo.setToolTipText(\"").append(componentInfo.getToolTipText()).append("\");\n");
                 }
                 javaCode.append("componentInfo.setxCoordinate(").append(componentInfo.getxCoordinate()).append(");\n");
                 javaCode.append("componentInfo.setyCoordinate(").append(componentInfo.getyCoordinate()).append(");\n");
                 javaCode.append("componentInfo.setRequestFocus(false);\n");
+                javaCode.append("componentInfo.setiValue(").append(componentInfo.getiValue()).append(");\n");
 
                 javaCode.append("list.add(componentInfo);\n");
             }
