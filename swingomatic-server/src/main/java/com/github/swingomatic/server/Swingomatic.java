@@ -274,6 +274,9 @@ public class Swingomatic implements
                         componentInfo.setiValue(j);
                         result.add(componentInfo);
                     }
+                } else if (comp instanceof JTextField) {
+                    logger.debug("JTextField: " + ((JTextField)comp).getToolTipText());
+                    logger.debug(comp);
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
             }
@@ -344,6 +347,10 @@ public class Swingomatic implements
                         }
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
                         logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
+                        if (componentInfo.isRequestFocus()) {
+                            requestFocusForWindow(jLabel);
+                            jLabel.getLabelFor().requestFocus();
+                        }
                         if (jLabel.getLabelFor() instanceof JTextField) {
                             ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
                             result = true;
@@ -366,7 +373,7 @@ public class Swingomatic implements
                         if (componentInfo.isRequestFocus()) {
                             jtf.requestFocus();
                         }
-                        jtf.setText(componentInfo.getText());
+                        jtf.setText(componentInfo.getText());                        
                         return true;
                     }
                 }
