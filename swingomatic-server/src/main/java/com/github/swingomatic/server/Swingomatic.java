@@ -266,7 +266,7 @@ public class Swingomatic implements
                     logger.debug("tab count:" + jtp.getTabCount());
                     logger.debug(jtp.getComponentAt(0));
                     logger.debug(jtp.getTitleAt(0));
-                    
+
                     for (int j = 0; j < jtp.getTabCount(); j++) {
                         componentInfo = new ComponentInfo();
                         setComponentInfoProperties(jtp, componentInfo);
@@ -275,7 +275,7 @@ public class Swingomatic implements
                         result.add(componentInfo);
                     }
                 } else if (comp instanceof JTextField) {
-                    logger.debug("JTextField: " + ((JTextField)comp).getToolTipText());
+                    logger.debug("JTextField: " + ((JTextField) comp).getToolTipText());
                     logger.debug(comp);
                 }
                 addComponentNodes(((Container) c).getComponent(i), me, result);
@@ -324,6 +324,7 @@ public class Swingomatic implements
         if (c instanceof Container) {
             int count = ((Container) c).getComponentCount();
             for (int componentNumber = 0; componentNumber < count && !result; componentNumber++) {
+
                 Component comp = ((Container) c).getComponent(componentNumber);
                 logger.debug("processComponentNodes: " + comp.getClass().toString());
 
@@ -347,12 +348,13 @@ public class Swingomatic implements
                         }
                         logger.debug("ofLabel match found: " + componentInfo.getOfLabel());
                         logger.debug("label is for: " + jLabel.getLabelFor().getClass().toString());
-                        if (componentInfo.isRequestFocus()) {
-                            requestFocusForWindow(jLabel);
-                            jLabel.getLabelFor().requestFocus();
-                        }
+
                         if (jLabel.getLabelFor() instanceof JTextField) {
-                            ((JTextField) jLabel.getLabelFor()).setText(componentInfo.getText());
+                            JTextField jtf = (JTextField) jLabel.getLabelFor();
+                            logger.debug(jtf.getParent());
+                            logger.debug(jtf.getParent().getParent());
+                            //revalidateUltimateParent(JDialog.class, jtf);
+                            jtf.setText(componentInfo.getText());
                             result = true;
                         } else if (jLabel.getLabelFor() instanceof JComboBox) {
                             ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
@@ -364,36 +366,36 @@ public class Swingomatic implements
 
                     }
                 }
-                
+
                 if (comp instanceof JTextField) {
-                    JTextField jtf = (JTextField)comp;
-                    if (jtf.getToolTipText().equals(componentInfo.getToolTipText()) &&
-                            jtf.getX() == componentInfo.getxCoordinate() &&
-                            jtf.getY() == componentInfo.getyCoordinate()) {
+                    JTextField jtf = (JTextField) comp;
+                    if (jtf.getToolTipText().equals(componentInfo.getToolTipText())
+                            && jtf.getX() == componentInfo.getxCoordinate()
+                            && jtf.getY() == componentInfo.getyCoordinate()) {
                         if (componentInfo.isRequestFocus()) {
                             jtf.requestFocus();
                         }
-                        jtf.setText(componentInfo.getText());                        
+                        jtf.setText(componentInfo.getText());
                         return true;
                     }
                 }
-                
+
                 if (comp instanceof JTabbedPane) {
                     JTabbedPane jtp = (JTabbedPane) comp;
                     for (int tabNumber = 0; tabNumber < jtp.getTabCount(); tabNumber++) {
-                        if (jtp.getTitleAt(tabNumber).equals(componentInfo.getTitle()) &&
-                                tabNumber == componentInfo.getiValue()) {
+                        if (jtp.getTitleAt(tabNumber).equals(componentInfo.getTitle())
+                                && tabNumber == componentInfo.getiValue()) {
                             jtp.setSelectedIndex(tabNumber);
                             return true;
-                        } 
+                        }
                     }
                 }
-                
+
                 if (comp instanceof JButton) {
                     JButton jButton = (JButton) comp;
                     if (jButton.getToolTipText() != null
                             && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
-                        jButton.doClick();
+                        doButtonClick(jButton);
                         return true;
                     }
                 }
@@ -411,7 +413,6 @@ public class Swingomatic implements
                     if (jMenuItem.getText() != null
                             && jMenuItem.getText().equals(componentInfo.getText())) {
                         doClick(jMenuItem);
-                        //jMenuItem.doClick();
                         return true;
                     }
                 }
@@ -426,10 +427,15 @@ public class Swingomatic implements
         // cannot process 
         return result;
     }
-
+    
     private void doClick(JMenuItem jMenuItem) {
         DoClickTask doClickTask = new DoClickTask(jMenuItem);
         SwingUtilities.invokeLater(doClickTask);
+    }
+    
+    private void doButtonClick(JButton jButton) {
+        DoClickButtonTask doClickButtonTask = new DoClickButtonTask(jButton);
+        SwingUtilities.invokeLater(doClickButtonTask);
     }
 
     class DoClickTask implements Runnable {
@@ -445,6 +451,18 @@ public class Swingomatic implements
         }
     }
 
+    class DoClickButtonTask implements Runnable {
+        private JButton jButton;
+        
+        public DoClickButtonTask(JButton jButton) {
+            this.jButton = jButton;
+        }
+        
+        public void run() {
+            jButton.doClick();
+        }
+    }
+    
     private JTree createAccessibleTree() {
         final JTree t;
         Window[] wins = EventQueueMonitor.getTopLevelWindows();
