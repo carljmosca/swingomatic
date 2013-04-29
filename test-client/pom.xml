@@ -28,6 +28,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <configuration>
                     <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
                     <archive>
@@ -102,7 +103,8 @@
             <groupId>com.oracle</groupId>
             <artifactId>javafx</artifactId>
             <version>2.1.0-beta-b15</version>
-<!--            <scope>provided</scope>-->
+            <scope>system</scope>
+            <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
