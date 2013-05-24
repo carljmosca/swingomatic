@@ -17,17 +17,23 @@ import java.awt.Window;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 public class Swingomatic implements
@@ -327,6 +333,7 @@ public class Swingomatic implements
 
                 Component comp = ((Container) c).getComponent(componentNumber);
                 logger.debug("processComponentNodes: " + comp.getClass().toString());
+                logger.debug("XY:" + componentInfo.getxCoordinate() + " " + componentInfo.getyCoordinate());
 
                 /*
                  * Despite what the JavaDoc seems to state, requesting focus on
@@ -355,15 +362,17 @@ public class Swingomatic implements
                             logger.debug(jtf.getParent().getParent());
                             //revalidateUltimateParent(JDialog.class, jtf);
                             jtf.setText(componentInfo.getText());
+                            logger.debug("found JTextField; called setText");
                             result = true;
                         } else if (jLabel.getLabelFor() instanceof JComboBox) {
                             ((JComboBox) jLabel.getLabelFor()).setSelectedItem(componentInfo.getText());
+                            logger.debug("found JComboBox; called setSelectedItem");
                             return true;
                         } else if (jLabel.getLabelFor() instanceof JCheckBox) {
 //                            ((JCheckBox)jLabel.getLabelFor()).setSelected(true);
+                            logger.debug("found JCheckBox; no action taken");
                             return true;
                         }
-
                     }
                 }
 
@@ -376,6 +385,7 @@ public class Swingomatic implements
                             jtf.requestFocus();
                         }
                         jtf.setText(componentInfo.getText());
+                        logger.debug("found JTextField; called setText");
                         return true;
                     }
                 }
@@ -386,6 +396,7 @@ public class Swingomatic implements
                         if (jtp.getTitleAt(tabNumber).equals(componentInfo.getTitle())
                                 && tabNumber == componentInfo.getiValue()) {
                             jtp.setSelectedIndex(tabNumber);
+                            logger.debug("found JTabbedPane; called setSelectedIndex");
                             return true;
                         }
                     }
@@ -394,8 +405,12 @@ public class Swingomatic implements
                 if (comp instanceof JButton) {
                     JButton jButton = (JButton) comp;
                     if (jButton.getToolTipText() != null
+                            && componentInfo.getClazz().indexOf("Button") >= 0
+                            && jButton.getX() == componentInfo.getxCoordinate()
+                            && jButton.getY() == componentInfo.getyCoordinate()
                             && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
                         doButtonClick(jButton);
+                        logger.debug("found JButton; called doButtonClick");
                         return true;
                     }
                 }
@@ -404,6 +419,7 @@ public class Swingomatic implements
                     if (jButton.getToolTipText() != null
                             && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
                         jButton.doClick();
+                        logger.debug("found JToggleButton; called doClick");
                         return true;
                     }
                 }
@@ -413,6 +429,7 @@ public class Swingomatic implements
                     if (jMenuItem.getText() != null
                             && jMenuItem.getText().equals(componentInfo.getText())) {
                         doClick(jMenuItem);
+                        logger.debug("found JMenuItem; called doClick");
                         return true;
                     }
                 }
@@ -427,12 +444,12 @@ public class Swingomatic implements
         // cannot process 
         return result;
     }
-    
+
     private void doClick(JMenuItem jMenuItem) {
         DoClickTask doClickTask = new DoClickTask(jMenuItem);
         SwingUtilities.invokeLater(doClickTask);
     }
-    
+
     private void doButtonClick(JButton jButton) {
         DoClickButtonTask doClickButtonTask = new DoClickButtonTask(jButton);
         SwingUtilities.invokeLater(doClickButtonTask);
@@ -452,17 +469,18 @@ public class Swingomatic implements
     }
 
     class DoClickButtonTask implements Runnable {
+
         private JButton jButton;
-        
+
         public DoClickButtonTask(JButton jButton) {
             this.jButton = jButton;
         }
-        
+
         public void run() {
             jButton.doClick();
         }
     }
-    
+
     private JTree createAccessibleTree() {
         final JTree t;
         Window[] wins = EventQueueMonitor.getTopLevelWindows();
