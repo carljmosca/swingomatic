@@ -343,7 +343,9 @@ public class Swingomatic implements
                  */
                 //requestFocusForWindow(comp);
 
-                if ((componentInfo.getOfLabel() != null) && (comp instanceof JLabel)) {
+                if ((componentInfo.getOfLabel() != null)
+                        && componentInfo.getOfLabel().trim().length() > 0
+                        && (comp instanceof JLabel)) {
                     logger.debug("ofLabel and JLabel found");
                     JLabel jLabel = (JLabel) comp;
                     logger.debug("JLabel Text: " + jLabel.getText());
@@ -378,6 +380,9 @@ public class Swingomatic implements
 
                 if (comp instanceof JTextField) {
                     JTextField jtf = (JTextField) comp;
+                    logger.debug("JTextField found: component ToolTipText: " 
+                            + jtf.getToolTipText()
+                            + " componentInfoToolTipText:" + componentInfo.getToolTipText());
                     if (jtf.getToolTipText().equals(componentInfo.getToolTipText())
                             && jtf.getX() == componentInfo.getxCoordinate()
                             && jtf.getY() == componentInfo.getyCoordinate()) {
