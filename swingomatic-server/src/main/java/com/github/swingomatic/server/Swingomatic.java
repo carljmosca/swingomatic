@@ -29,6 +29,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
@@ -437,6 +438,19 @@ public class Swingomatic implements
                         logger.debug("found JMenuItem; called doClick");
                         return true;
                     }
+                }
+                
+                if (comp instanceof JTextArea) {
+                    JTextArea jTextArea = (JTextArea) comp;
+                    if (jTextArea.getToolTipText() != null
+                            && componentInfo.getClazz().indexOf("TextArea") >= 0
+                            && jTextArea.getX() == componentInfo.getxCoordinate()
+                            && jTextArea.getY() == componentInfo.getyCoordinate()
+                            && jTextArea.getToolTipText().equals(componentInfo.getToolTipText())) {
+                        jTextArea.setText(componentInfo.getText());
+                        logger.debug("found JTextArea; set text");
+                        return true;
+                    }                    
                 }
 
                 if (!result) {
