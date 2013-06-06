@@ -381,7 +381,7 @@ public class Swingomatic implements
 
                 if (comp instanceof JTextField) {
                     JTextField jtf = (JTextField) comp;
-                    logger.debug("JTextField found: component ToolTipText: " 
+                    logger.debug("JTextField found: component ToolTipText: "
                             + jtf.getToolTipText()
                             + " componentInfoToolTipText:" + componentInfo.getToolTipText());
                     if (jtf.getToolTipText().equals(componentInfo.getToolTipText())
@@ -410,11 +410,12 @@ public class Swingomatic implements
 
                 if (comp instanceof JButton) {
                     JButton jButton = (JButton) comp;
-                    if (jButton.getToolTipText() != null
+                    if (((jButton.getToolTipText() != null
+                            && jButton.getToolTipText().equals(componentInfo.getToolTipText()))
+                            || (jButton.getToolTipText() == null))
                             && componentInfo.getClazz().indexOf("Button") >= 0
                             && jButton.getX() == componentInfo.getxCoordinate()
-                            && jButton.getY() == componentInfo.getyCoordinate()
-                            && jButton.getToolTipText().equals(componentInfo.getToolTipText())) {
+                            && jButton.getY() == componentInfo.getyCoordinate()) {
                         doButtonClick(jButton);
                         logger.debug("found JButton; called doButtonClick");
                         return true;
@@ -439,7 +440,7 @@ public class Swingomatic implements
                         return true;
                     }
                 }
-                
+
                 if (comp instanceof JTextArea) {
                     JTextArea jTextArea = (JTextArea) comp;
                     if (jTextArea.getToolTipText() != null
@@ -450,7 +451,7 @@ public class Swingomatic implements
                         jTextArea.setText(componentInfo.getText());
                         logger.debug("found JTextArea; set text");
                         return true;
-                    }                    
+                    }
                 }
 
                 if (!result) {
